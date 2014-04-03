@@ -146,7 +146,7 @@ body > .catalog-browse-view {
 
 /* Catalog list */
 body > .catalog-list-view {
-	min-width: 12in;
+	width: 1024px;
 }
 #courses {
 	width: 100%;
@@ -162,23 +162,26 @@ body > .catalog-list-view {
 }
 #courses tr:hover {
 	background-color: #EFF6FF;
-	cursor: pointer;
+	/*cursor: pointer;*/
 }
 #courses th, #courses td {
-	padding: 7px 5px;
+	padding: 8px;
 }
-#courses > tbody > tr > td:nth-child(2) {
+#courses > tbody > tr > td:nth-child(1) {
 	min-width: 300px;
+	text-align: left;
+	padding-left: 1em;
+	line-height: 1.5em;
 }
-#courses > tbody > tr > td:nth-child(3),
-#courses > tbody > tr > td:nth-child(6) {
+#courses > tbody > tr > td:nth-child(2)
+/*#courses > tbody > tr > td:nth-child(6)*/ {
 	white-space: nowrap;
-}
+}/*
 #courses > tbody > tr > td:nth-child(4) {
 	font-size: 0.9em;
 	width: 25%;
 	max-width: 360px;
-}
+}*/
 
 #courses table.sections {
 	margin: 0 auto;

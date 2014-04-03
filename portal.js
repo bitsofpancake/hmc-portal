@@ -94,28 +94,43 @@ function listCourses(courses) {
 			if (!row)
 				return;
 		}
-		var index = row.getAttribute('data-index').split(' ');
+		var index = +row.getAttribute('data-index');
 		var details = document.createElement('tr');
-		details.innerHTML = '<td colspan="8">' + courses[index[0]].abstr + '</td>';
+		details.innerHTML = '\
+			<td colspan="4"><pre style="white-space: pre-wrap; font-family: consolas, monospace; font-size: 0.8em">' + JSON.stringify(courses[index], null, 4) + '</pre></td>';
 		
 		if (row.nextSibling)
 			row.parentNode.insertBefore(details, row.nextSibling);
 		else
 			row.parentNode.appendChild(details);
-		console.log();
 	};
 
 	table.innerHTML = courses.map(function (crs, i) {
+		var instructors = [];
+		crs.sections.forEach(function (sec) {
+			sec.meetings.forEach(function (mtg) {
+				instructors = instructors.concat(mtg.instructors.map(function (name) {
+					name = name.split(', '); 
+					return (name[1] || '') + ' ' + name[0];
+				}));
+			});
+		});
+		instructors = instructors.filter(function (x, i, a) { return a.indexOf(x) == i; });
+		//toSet(crs.sec.meetings.map(function (mtg) { return mtg.instructors; }));
+	
+		return '\
+			<tr data-index="' + i + '">\
+				<!--td>' + colorCourseName(crs.crs_no) + /*"&#8209;" + sec.sec_no + */'</td-->\
+				<td>\
+					<div style="margin-bottom: 2px; line-height: 1.2em"><b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b> (<i>' + instructors.join('; ') + '</i>)</div> ' + (crs.abstr || '') + /*<br/>(' + instructors.join('; ') + ')' (sec.title ? '<br />' + sec.title : '') +*/ '</td>\
+				<td><button>View Details</button> <button>Save</button></td>\
+			</tr>';
+		}).join('');
+	/*
+				<td>' + sec.units.toFixed(2) + '</td>\
+				<td>' + sec.beg_date + '<br />' + sec.end_date + '</td>\
+				<td><span style="color: #666">enrolled</span>: ' + sec.reg_num + '<br /><span style="color: #666">max:</span> ' + sec.reg_max + '</td>\
 		return crs.sections.map(function (sec, j) {
-			var instructors = toSet(sec.meetings.map(function (mtg) { return mtg.instructors; }));
-			
-			return '\
-				<tr data-index="' + i + ' ' + j + '">\
-					<td>' + colorCourseName(crs.crs_no) + "&#8209;" + sec.sec_no + '</td>\
-					<td><b>' + crs.title + '</b>' + (sec.title ? '<br />' + sec.title : '') + '</td>\
-					<td>' + instructors.join('<br />') + '</td>\
-					<td>\
-						<table class="sections">' + 
 				sec.meetings.map(function (mtg) {
 					if (+mtg.beg_tm == 0 && (+mtg.end_tm == 0 || +mtg.end_tm == 1200))
 						return '';
@@ -163,7 +178,7 @@ function listCourses(courses) {
 				</tr>';
 		}).join('');
 	}).join('');
-	
+	*/
 	// Scroll to the top.
 	window.scroll(0, 0);
 }
