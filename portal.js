@@ -254,8 +254,8 @@ document.querySelector('#search').onsubmit = function () {
 
 function api(query, callback) {
 	var req = new XMLHttpRequest();
-	req.withCredentials = true;
 	req.open('GET', 'http://cs.hmc.edu:41783/' + query);
+	req.withCredentials = true;
 	req.onreadystatechange = function () {
 		if (req.readyState != 4)
 			return;
