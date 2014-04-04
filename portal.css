@@ -148,7 +148,7 @@ body > .catalog-list-view {
 	width: 960px;
 	font-size: 0.9em;
 }
-#courses {
+.catalog-list-view > table {
 	width: 100%;
 }
 #courses .course-entry {
