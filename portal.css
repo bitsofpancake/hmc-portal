@@ -1,7 +1,7 @@
 body {
 	font-family: "segoe ui", "helvetica neue", helvetica, sans-serif;
 	background-color: #fafafa;
-	font-size: 14px;
+	font-size: 16px;
 	margin: 67px 0;
 	padding: 1em;
 }
@@ -37,7 +37,6 @@ header {
 	float: left;
 	margin: 0 1em;
 	line-height: 2.5em;
-	font-size: 1.1em;
 }
 #nav h1 {
 	display: inline;
@@ -147,80 +146,97 @@ body > .catalog-browse-view {
 /* Catalog list */
 body > .catalog-list-view {
 	width: 960px;
+	font-size: 0.9em;
 }
 #courses {
 	width: 100%;
-	border-color: #ccc;
-	font-size: 10pt;
-	box-shadow: 0 0 45px #eee;
+}
+#courses .course-entry {
+	background-color: #fff;
+	padding: 1em;
+}
+#courses .course-head {
 	cursor: pointer;
 }
-#courses th {
-	background-color: #164A78;
-	color: white;
-}/*
-#courses tr:hover {
-	background-color: #EFF6FF;
-}*/
-#courses th, #courses td {
-	padding: 8px;
-}
-#courses > tr > td:nth-child(1) {
-	background-color: #fff;
-	padding-left: 1em;
-	line-height: 1.5em;
-}
-#courses > tr > td:nth-child(1) div {
+#courses .course-title {
 	margin-bottom: 2px;
 	line-height: 1.2em
 }
-#courses > tr > td:nth-child(2) {
-	/*visibility: hidden;*/
+#courses .course-abstr {
+	line-height: 1.5em;
+}
+#courses .course-check {
+	visibility: hidden;
+	padding: 1em;
 	white-space: nowrap;
 	vertical-align: top;
 }
-#courses > tr:hover > td:nth-child(2) {
-	visibility: visible;
+/*
+#courses .course-entry:hover {
+	background-color: #fafaff;
 }
+#courses tr:hover .course-check {
+	visibility: visible;
+}*/
 
-#courses .details {
+#courses .course-details {
+	margin-top: 1em;
 	font-size: 0.9em;
 }
-#courses .details > table {
+#courses .course-reqs {
+	margin: 1em;
+}
+#courses .course-footnotes {
+	margin: 0.5em 1em 0;
+}
+
+#courses .sections {
 	text-align: center;
+	width: 100%;
 }
-#courses .details > table td:nth-child(1) {
-	text-align: left;
-	padding: 0 10px;
+#courses .section-row > td {
+	padding: 3px;
 }
-#courses .details > table tr:nth-child(odd) {
+#courses .section-row:nth-child(odd) {
 	background-color: #F4F5FF !important;
 }
-#courses .details > table tr:nth-child(even) {
+#courses .section-row:nth-child(even) {
 	background-color: #EDEEFF !important;
-	/*width: 100%;
-	text-align: center;*/
+}
+#courses .section-head {
+	text-align: left;
+	padding: 5px 1em !important;
+	width: 20%;
+}
+#courses .section-dates, #courses .section-numbers {
+	width: 10%;
+}
+#courses .section-numbers span {
+	color: #88a;
+}
+#course .section-units {
+	width: 5%;
 }
 
 
-#courses table.sections {
+#courses .meetings {
 	margin: 0 auto;
 }
-#courses table.sections td {
+#courses .meetings td {
 	padding: 0 1px;
 	white-space: nowrap;
 }
-#courses table.sections td:nth-child(1) {
+#courses .meetings td:nth-child(1) {
 	text-align: right;
 	padding-right: 3px;
 	color: #666;
 }
-#courses table.sections td:nth-child(2) {
+#courses .meetings td:nth-child(2) {
 	text-align: center;
 }
 
-#courses table.sections td:nth-child(4),
-#courses table.sections td:nth-child(3) {
+#courses .meetings td:nth-child(4),
+#courses .meetings td:nth-child(3) {
 	text-align: left;
 }
 

@@ -107,22 +107,48 @@ function colorCourseName(name) {
 function listCourses(courses) {
 	console.log(courses);
 	
-	var listing = document.querySelector('#courses');
-	listing.onclick = function (e) {
+	// Fill the rows with courses!.
+	document.querySelector('#courses').innerHTML = courses.map(function (crs, i) {
+		var instructors = [];
+		crs.sections.forEach(function (sec) {
+			sec.meetings.forEach(function (mtg) {
+				instructors = instructors.concat(mtg.instructors.map(function (name) {
+					name = name.split(', '); 
+					return (name[1] || '') + ' ' + name[0];
+				}));
+			});
+		});
+		instructors = instructors.unique();
+	
+		return '\
+			<tr>\
+				<td class="course-entry" data-index="' + i + '">\
+					<div class="course-head">\
+						<div class="course-title">\
+							<b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b> (<i>' + instructors.join('; ') + '</i>)\
+						</div>' + (crs.abstr ? '<div class="course-abstr">' + crs.abstr + '</div>' : '') + '\
+					</div>\
+				</td>\
+				<td class="course-check"><input type="checkbox" /></td>\
+			</td>';
+		}).join('');
+		
+	document.querySelector('#courses').onclick = function (e) {
 		// Get the row that was clicked on.
 		var row = e.target;
 		while (row && row.getAttribute && !row.getAttribute('data-index'))
 			row = row.parentNode;
-		if (!row || !row.parentNode)
+		if (!row || !row.getAttribute)
 			return;
 		var index = row.getAttribute('data-index');
-		row = row.parentNode;
-		/*
-		// Get rid of the old row.
-		var old = document.querySelector('#courses .details');
-		if (old)
+		
+		// Get rid of the old details.
+		var old = row.querySelector('.course-details');
+		if (old) {
 			old.parentNode.removeChild(old);
-		*/
+			return;
+		}
+		
 		var crs = courses[+index];
 		
 		// Generate the requirements list.
@@ -130,7 +156,7 @@ function listCourses(courses) {
 			return reqgrp.map(function (req) {
 				if (req.type === 'course') {
 					// The course number is funny -- FREN1***** means FREN 100 or greater. Make it more intuitive to understand.
-					var crs_no = req.crs_no.substr(0, 'MATH131'.length).replace(/\*/g, 'x') + req.crs_no.substr('MATH131'.length).replace(/\*/g, ' ');
+					var crs_no = (req.crs_no + '******').substr(0, 'MATH131'.length).replace(/\*/g, 'x') + req.crs_no.substr('MATH131'.length).replace(/\*/g, ' ');
 					return '<b>' + colorCourseName(crs_no) + '</b> (' + req.grade + (req.category !== 'P' ? ', ' + req.category : '') + ')';
 				}
 				else if (req.type === 'exam')
@@ -141,11 +167,11 @@ function listCourses(courses) {
 		// Make footnotes for the section requirements.
 		var footnotes = [];
 		
-		var details = document.createElement('tr');
+		var details = document.createElement('div');
+		details.className = 'course-details';
 		details.innerHTML = '\
-		<td class="details">\
-			' + (reqs.length ? 'Requirements: [' + reqs.join('] <span style="font-variant: small-caps">or</span> [') + ']<br />' : '') + '\
-				<table style="width: 100% ">\
+				' + (reqs.length ? '<div class="course-reqs">Requirements: [' + reqs.join('] <span style="font-variant: small-caps">or</span> [') + ']</div>' : '') + '\
+				<table class="sections">\
 					' + crs.sections.map(function (sec) {
 										
 						var instructors = [];
@@ -163,17 +189,17 @@ function listCourses(courses) {
 						});
 						
 						return '\
-							<tr>\
-								<td><b>Section ' + sec.sec_no + (sec.title ? '<br />' + sec.title : '') + '</b><sup>' + reqs.join(',') + '</sup><br /><i>' + instructors.join('<br />') + '</i></td>\
+							<tr class="section-row">\
+								<td class="section-head"><b>Section ' + sec.sec_no + (sec.title ? '<br />' + sec.title : '') + '</b><sup>' + reqs.join(',') + '</sup><br /><i>' + instructors.join('<br />') + '</i></td>\
 								<td>\
-									<table class="sections">' +
+									<table class="meetings">' +
 								sec.meetings.map(function (mtg) {
 									if (+mtg.beg_tm == 0 && (+mtg.end_tm == 0 || +mtg.end_tm == 1200))
 										return '';
 								
 									return '\
 										<tr title="' + mtg.instructors.sort().map(function (instr) { return instr.split(',')[0]; }).join('; ') + '">\
-											<td class="' +  mtg.im + '">' + (mtg.im !== 'XX' ? im[mtg.im] + ':' : '') + '</td>\
+											<td>' + (mtg.im !== 'XX' ? im[mtg.im] + ':' : '') + '</td>\
 											<td>' + mtg.days.replace(/-/g, '') + '</td>\
 											<td>' + (Math.floor(mtg.beg_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.beg_tm % 100)).substr(-2) + '&ndash;' +
 												(Math.floor(mtg.end_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.end_tm % 100)).substr(-2) + (mtg.end_tm >= 1200 ? 'pm' : 'am') + 
@@ -183,101 +209,26 @@ function listCourses(courses) {
 								}).join('') + '\
 									</table>\
 								</td>\
-								<td>' + sec.beg_date + '<br />' + sec.end_date + '</td>\
-								<td><span style="color: #666">enrolled</span>: ' + sec.reg_num + '<br /><span style="color: #666">max:</span> ' + sec.reg_max + '</td>\
-								<td>' + sec.units.toFixed(2) + '</td>\
+								<td class="section-dates">' + sec.beg_date + '<br />' + sec.end_date + '</td>\
+								<td class="section-numbers">\
+									<span>enrolled:</span> ' + sec.reg_num + '<br />\
+									<span>max:</span> ' + sec.reg_max + '\
+								</td>\
+								<td class="section-units">' + sec.units.toFixed(2) + '</td>\
 								<td><input type="checkbox" /></td>\
 							</tr>\
 						';
 					}).join('') + '\
 				</table>\
+				<div class="course-footnotes">\
 				' + footnotes.map(function (footnote, i) {
 					return '<sup>' + (i + 1) + '</sup>' + footnote;
 				}).join('<br />') + '\
-			</td>';
+				</div>';
 		
-		if (row.nextSibling)
-			row.parentNode.insertBefore(details, row.nextSibling);
-		else
-			row.parentNode.appendChild(details);
+		row.appendChild(details);
 	};
-
-	listing.innerHTML = courses.map(function (crs, i) {
-		var instructors = [];
-		crs.sections.forEach(function (sec) {
-			sec.meetings.forEach(function (mtg) {
-				instructors = instructors.concat(mtg.instructors.map(function (name) {
-					name = name.split(', '); 
-					return (name[1] || '') + ' ' + name[0];
-				}));
-			});
-		});
-		instructors = instructors.unique();
-		//toSet(crs.sec.meetings.map(function (mtg) { return mtg.instructors; }));
-	
-		return '\
-			<tr>\
-				<td data-index="' + i + '">\
-					<div>\
-						<b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b> (<i>' + instructors.join('; ') + '</i>)</div>\
-					</div>' + (crs.abstr || '') + '\
-				</td>\
-				<td><input type="checkbox" /></td>\
-			</td>';
-		}).join('');
-	/*
-				<td>' + sec.units.toFixed(2) + '</td>\
-				<td>' + sec.beg_date + '<br />' + sec.end_date + '</td>\
-				<td><span style="color: #666">enrolled</span>: ' + sec.reg_num + '<br /><span style="color: #666">max:</span> ' + sec.reg_max + '</td>\
-		return crs.sections.map(function (sec, j) {
-				sec.meetings.map(function (mtg) {
-					if (+mtg.beg_tm == 0 && (+mtg.end_tm == 0 || +mtg.end_tm == 1200))
-						return '';
-				
-					return '\
-							<tr title="' + mtg.instructors.sort().map(function (instr) { return instr.split(',')[0]; }).join('; ') + '">\
-								<td class="' +  mtg.im + '">' + (mtg.im !== 'XX' ? {
-									'CL': 'clinic', 
-									'CQ': 'colloquium',
-									'DC': 'discussion',
-									'DS': 'independent study', // directed study
-									'FM': 'film',
-									'FS': 'seminar', // freshman seminar
-									'IP': 'internship',
-									'IS': 'independent study',
-									'LB': 'lab', 
-									'LC': 'lecture', 
-									'LD': 'discussion',
-									'LL': 'lecture/lab',
-									'LO': 'LO', // cancelled?
-									'PE': 'PE', 
-									'PR': 'practicum', 
-									'RC': 'recitation', 
-									'RS': 'research',
-									'SE': 'seminar',
-									'ST': 'studio',
-									'SX': 'thesis', // senior thesis
-									'SS': 'seminar', // senior seminar
-									'TS': 'test',
-									'XX': 'class'
-								}[mtg.im] + ':' : '') + '</td>\
-								<td>' + mtg.days.replace(/-/g, '') + '</td>\
-								<td>' + (Math.floor(mtg.beg_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.beg_tm % 100)).substr(-2) + '&ndash;' +
-									(Math.floor(mtg.end_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.end_tm % 100)).substr(-2) + (mtg.end_tm >= 1200 ? 'pm' : 'am') + 
-									(mtg.building || mtg.room ? ', ' : '') + mtg.building + ' ' + mtg.room + '\
-								</td>\
-							</tr>';
-				}).join('') + '\
-						</table>\
-					</td>\
-					<td>' + sec.beg_date + '<br />' + sec.end_date + '</td>\
-					<td><span style="color: #666">enrolled</span>: ' + sec.reg_num + '<br /><span style="color: #666">max:</span> ' + sec.reg_max + '</td>\
-					<td>' + sec.units.toFixed(2) + '</td>\
-					<td><button>Add</button></td>\
-				</tr>';
-		}).join('');
-	}).join('');
-	*/
+		
 	// Scroll to the top.
 	window.scroll(0, 0);
 }
