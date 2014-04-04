@@ -181,7 +181,7 @@ body > .catalog-list-view {
 
 #courses .course-details {
 	margin-top: 1em;
-	font-size: 0.9em;
+	font-size: 0.8em;
 }
 #courses .course-reqs {
 	margin: 1em;
@@ -214,7 +214,7 @@ body > .catalog-list-view {
 #courses .section-numbers span {
 	color: #88a;
 }
-#course .section-units {
+#courses .section-units, #courses .section-check {
 	width: 5%;
 }
 

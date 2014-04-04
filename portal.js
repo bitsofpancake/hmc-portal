@@ -73,7 +73,7 @@ Array.prototype.unique = function () {
 	return this.filter(function (x, i, a) { return a.indexOf(x) == i; });
 }
 
-var im = {
+var imTable = {
 	'CL': 'clinic', 
 	'CQ': 'colloquium',
 	'DC': 'discussion',
@@ -98,6 +98,10 @@ var im = {
 	'TS': 'test',
 	'XX': 'class'
 };
+var catTable = {
+	'C': 'corequisite',
+	'N': 'concurrent'
+};
 
 function colorCourseName(name) {
 	var campus = name.substr('MATH131  '.length, 2);
@@ -107,7 +111,7 @@ function colorCourseName(name) {
 function listCourses(courses) {
 	console.log(courses);
 	
-	// Fill the rows with courses!.
+	// Fill the rows with courses!
 	document.querySelector('#courses').innerHTML = courses.map(function (crs, i) {
 		var instructors = [];
 		crs.sections.forEach(function (sec) {
@@ -122,8 +126,8 @@ function listCourses(courses) {
 	
 		return '\
 			<tr>\
-				<td class="course-entry" data-index="' + i + '">\
-					<div class="course-head">\
+				<td class="course-entry">\
+					<div class="course-head" data-index="' + i + 'x">\
 						<div class="course-title">\
 							<b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b> (<i>' + instructors.join('; ') + '</i>)\
 						</div>' + (crs.abstr ? '<div class="course-abstr">' + crs.abstr + '</div>' : '') + '\
@@ -131,46 +135,50 @@ function listCourses(courses) {
 				</td>\
 				<td class="course-check"><input type="checkbox" /></td>\
 			</td>';
-		}).join('');
-		
+	}).join('');
+	
+	// When a course is clicked, expand the details.
 	document.querySelector('#courses').onclick = function (e) {
-		// Get the row that was clicked on.
+	
+		// Get the course that was clicked on.
+		var index = '';
 		var row = e.target;
-		while (row && row.getAttribute && !row.getAttribute('data-index'))
+		while (row && row.className !== 'course-entry') {
+			index = index || row.getAttribute('data-index');
 			row = row.parentNode;
-		if (!row || !row.getAttribute)
+		}
+		if (!index)
 			return;
-		var index = row.getAttribute('data-index');
+		var crs = courses[parseInt(index, 10)];
 		
-		// Get rid of the old details.
+		// Get rid of the old details if it's already showing.
 		var old = row.querySelector('.course-details');
 		if (old) {
 			old.parentNode.removeChild(old);
 			return;
 		}
 		
-		var crs = courses[+index];
-		
 		// Generate the requirements list.
-		var reqs = crs.reqs.map(function (reqgrp) {
+		var reqs = crs.reqs ? crs.reqs.map(function (reqgrp) {
 			return reqgrp.map(function (req) {
 				if (req.type === 'course') {
 					// The course number is funny -- FREN1***** means FREN 100 or greater. Make it more intuitive to understand.
 					var crs_no = (req.crs_no + '******').substr(0, 'MATH131'.length).replace(/\*/g, 'x') + req.crs_no.substr('MATH131'.length).replace(/\*/g, ' ');
-					return '<b>' + colorCourseName(crs_no) + '</b> (' + req.grade + (req.category !== 'P' ? ', ' + req.category : '') + ')';
+					return '<b title="with at least a ' + req.grade + '">' + colorCourseName(crs_no).trim() + '</b>' + (req.category !== 'P' ? ' (' + catTable[req.category] + ')' : '');
 				}
 				else if (req.type === 'exam')
-					return req.exam + ' (' + req.score + ')';
+					return '<b>' + req.exam + '</b> (' + req.score + ')';
 			}).sort().join(', ');
-		});
+		}) : [];
 
 		// Make footnotes for the section requirements.
 		var footnotes = [];
 		
+		// Generate the HTML.
 		var details = document.createElement('div');
 		details.className = 'course-details';
 		details.innerHTML = '\
-				' + (reqs.length ? '<div class="course-reqs">Requirements: [' + reqs.join('] <span style="font-variant: small-caps">or</span> [') + ']</div>' : '') + '\
+				' + (reqs.length ? '<div class="course-reqs"><i>Requirements</i>: [' + reqs.join('] <span style="font-variant: small-caps">or</span> [') + ']</div>' : '') + '\
 				<table class="sections">\
 					' + crs.sections.map(function (sec) {
 										
@@ -183,14 +191,18 @@ function listCourses(courses) {
 						});
 						instructors = instructors.unique();
 						
-						var reqs = sec.reqs.map(function (req) {
+						var reqs = sec.reqs ? sec.reqs.map(function (req) {
 							var index = footnotes.indexOf(req);
 							return 1 + index || footnotes.push(req);
-						});
+						}) : [];
 						
 						return '\
 							<tr class="section-row">\
-								<td class="section-head"><b>Section ' + sec.sec_no + (sec.title ? '<br />' + sec.title : '') + '</b><sup>' + reqs.join(',') + '</sup><br /><i>' + instructors.join('<br />') + '</i></td>\
+								<td class="section-head">\
+									<b>Section ' + sec.sec_no + '</b><sup>' + reqs.join(',') + '</sup><br />\
+									<b>' + (sec.title ? sec.title + '<br />' : '') + '</b>\
+									<i>' + instructors.join('<br />') + '</i>\
+								</td>\
 								<td>\
 									<table class="meetings">' +
 								sec.meetings.map(function (mtg) {
@@ -199,7 +211,7 @@ function listCourses(courses) {
 								
 									return '\
 										<tr title="' + mtg.instructors.sort().map(function (instr) { return instr.split(',')[0]; }).join('; ') + '">\
-											<td>' + (mtg.im !== 'XX' ? im[mtg.im] + ':' : '') + '</td>\
+											<td>' + (mtg.im !== 'XX' ? imTable[mtg.im] + ':' : '') + '</td>\
 											<td>' + mtg.days.replace(/-/g, '') + '</td>\
 											<td>' + (Math.floor(mtg.beg_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.beg_tm % 100)).substr(-2) + '&ndash;' +
 												(Math.floor(mtg.end_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.end_tm % 100)).substr(-2) + (mtg.end_tm >= 1200 ? 'pm' : 'am') + 
@@ -214,8 +226,8 @@ function listCourses(courses) {
 									<span>enrolled:</span> ' + sec.reg_num + '<br />\
 									<span>max:</span> ' + sec.reg_max + '\
 								</td>\
-								<td class="section-units">' + sec.units.toFixed(2) + '</td>\
-								<td><input type="checkbox" /></td>\
+								<td class="section-units">' + (sec.units * (crs.crs_no.substr('MATH131  '.length, 2) === 'HM' ? 1 : 3)).toFixed(2) + '</td>\
+								<td class="section-check"><input type="checkbox" /></td>\
 							</tr>\
 						';
 					}).join('') + '\
