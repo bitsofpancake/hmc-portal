@@ -194,7 +194,7 @@ function listCourses(courses) {
 						var reqs = sec.reqs ? sec.reqs.map(function (req) {
 							var index = footnotes.indexOf(req);
 							return 1 + index || footnotes.push(req);
-						}) : [];
+						}).sort() : [];
 						
 						return '\
 							<tr class="section-row">\
