@@ -146,42 +146,62 @@ body > .catalog-browse-view {
 
 /* Catalog list */
 body > .catalog-list-view {
-	width: 1024px;
+	width: 960px;
 }
 #courses {
 	width: 100%;
 	border-color: #ccc;
 	font-size: 10pt;
-	background-color: #fff;
 	box-shadow: 0 0 45px #eee;
-	text-align: center;
+	cursor: pointer;
 }
 #courses th {
 	background-color: #164A78;
 	color: white;
-}
+}/*
 #courses tr:hover {
 	background-color: #EFF6FF;
-	/*cursor: pointer;*/
-}
+}*/
 #courses th, #courses td {
 	padding: 8px;
 }
-#courses > tbody > tr > td:nth-child(1) {
-	min-width: 300px;
-	text-align: left;
+#courses > tr > td:nth-child(1) {
+	background-color: #fff;
 	padding-left: 1em;
 	line-height: 1.5em;
 }
-#courses > tbody > tr > td:nth-child(2)
-/*#courses > tbody > tr > td:nth-child(6)*/ {
+#courses > tr > td:nth-child(1) div {
+	margin-bottom: 2px;
+	line-height: 1.2em
+}
+#courses > tr > td:nth-child(2) {
+	/*visibility: hidden;*/
 	white-space: nowrap;
-}/*
-#courses > tbody > tr > td:nth-child(4) {
+	vertical-align: top;
+}
+#courses > tr:hover > td:nth-child(2) {
+	visibility: visible;
+}
+
+#courses .details {
 	font-size: 0.9em;
-	width: 25%;
-	max-width: 360px;
-}*/
+}
+#courses .details > table {
+	text-align: center;
+}
+#courses .details > table td:nth-child(1) {
+	text-align: left;
+	padding: 0 10px;
+}
+#courses .details > table tr:nth-child(odd) {
+	background-color: #F4F5FF !important;
+}
+#courses .details > table tr:nth-child(even) {
+	background-color: #EDEEFF !important;
+	/*width: 100%;
+	text-align: center;*/
+}
+
 
 #courses table.sections {
 	margin: 0 auto;
@@ -203,3 +223,9 @@ body > .catalog-list-view {
 #courses table.sections td:nth-child(3) {
 	text-align: left;
 }
+
+.crs-HM { color: gold; }
+.crs-PO { color: blue; }
+.crs-CM { color: red; }
+.crs-SC { color: green; }
+.crs-PZ { color: orange; }

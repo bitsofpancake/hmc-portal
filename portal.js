@@ -69,35 +69,132 @@ function toSet(arrays) {
 	return s;
 }
 
-var table = document.querySelector('#courses tbody');
+Array.prototype.unique = function () {
+	return this.filter(function (x, i, a) { return a.indexOf(x) == i; });
+}
+
+var im = {
+	'CL': 'clinic', 
+	'CQ': 'colloquium',
+	'DC': 'discussion',
+	'DS': 'independent study', // directed study
+	'FM': 'film',
+	'FS': 'seminar', // freshman seminar
+	'IP': 'internship',
+	'IS': 'independent study',
+	'LB': 'lab', 
+	'LC': 'lecture', 
+	'LD': 'discussion',
+	'LL': 'lecture/lab',
+	'LO': 'LO', // cancelled?
+	'PE': 'PE', 
+	'PR': 'practicum', 
+	'RC': 'recitation', 
+	'RS': 'research',
+	'SE': 'seminar',
+	'ST': 'studio',
+	'SX': 'thesis', // senior thesis
+	'SS': 'seminar', // senior seminar
+	'TS': 'test',
+	'XX': 'class'
+};
 
 function colorCourseName(name) {
-	return name.replace(/^[A-Z]+/, function (x) { return '<b>' + x + '</b>'; }).replace(/[1-9]\d*/, function (x) { return '<b>' + x + '</b>'; }).replace(/[A-Z]{2}$/, function (school) {
-		var colors = {
-			'HM': 'gold',
-			'PO': 'blue',
-			'CM': 'red',
-			'SC': 'green',
-			'PZ': 'orange'
-		};
-		return colors[school] ? '<b style="color: ' + colors[school] + '">' + school + '</b>' : '<b>' + school + '</b>';
-	});
+	var campus = name.substr('MATH131  '.length, 2);
+	return campus ? name.substr(0, 'MATH131  '.length) + '<span class="crs-' + campus + '">' + campus + '</span>' : name;
 }
 
 function listCourses(courses) {
 	console.log(courses);
-	table.onclick = function (e) {
+	
+	var listing = document.querySelector('#courses');
+	listing.onclick = function (e) {
 		// Get the row that was clicked on.
 		var row = e.target;
-		while (row.tagName !== 'TR' || !row.getAttribute('data-index')) {
+		while (row && row.getAttribute && !row.getAttribute('data-index'))
 			row = row.parentNode;
-			if (!row)
-				return;
-		}
-		var index = +row.getAttribute('data-index');
+		if (!row || !row.parentNode)
+			return;
+		var index = row.getAttribute('data-index');
+		row = row.parentNode;
+		/*
+		// Get rid of the old row.
+		var old = document.querySelector('#courses .details');
+		if (old)
+			old.parentNode.removeChild(old);
+		*/
+		var crs = courses[+index];
+		
+		// Generate the requirements list.
+		var reqs = crs.reqs.map(function (reqgrp) {
+			return reqgrp.map(function (req) {
+				if (req.type === 'course') {
+					// The course number is funny -- FREN1***** means FREN 100 or greater. Make it more intuitive to understand.
+					var crs_no = req.crs_no.substr(0, 'MATH131'.length).replace(/\*/g, 'x') + req.crs_no.substr('MATH131'.length).replace(/\*/g, ' ');
+					return '<b>' + colorCourseName(crs_no) + '</b> (' + req.grade + (req.category !== 'P' ? ', ' + req.category : '') + ')';
+				}
+				else if (req.type === 'exam')
+					return req.exam + ' (' + req.score + ')';
+			}).sort().join(', ');
+		});
+
+		// Make footnotes for the section requirements.
+		var footnotes = [];
+		
 		var details = document.createElement('tr');
 		details.innerHTML = '\
-			<td colspan="4"><pre style="white-space: pre-wrap; font-family: consolas, monospace; font-size: 0.8em">' + JSON.stringify(courses[index], null, 4) + '</pre></td>';
+		<td class="details">\
+			' + (reqs.length ? 'Requirements: [' + reqs.join('] <span style="font-variant: small-caps">or</span> [') + ']<br />' : '') + '\
+				<table style="width: 100% ">\
+					' + crs.sections.map(function (sec) {
+										
+						var instructors = [];
+						sec.meetings.forEach(function (mtg) {
+							instructors = instructors.concat(mtg.instructors.map(function (name) {
+								name = name.split(', '); 
+								return (name[1] || '') + ' ' + name[0];
+							}));
+						});
+						instructors = instructors.unique();
+						
+						var reqs = sec.reqs.map(function (req) {
+							var index = footnotes.indexOf(req);
+							return 1 + index || footnotes.push(req);
+						});
+						
+						return '\
+							<tr>\
+								<td><b>Section ' + sec.sec_no + (sec.title ? '<br />' + sec.title : '') + '</b><sup>' + reqs.join(',') + '</sup><br /><i>' + instructors.join('<br />') + '</i></td>\
+								<td>\
+									<table class="sections">' +
+								sec.meetings.map(function (mtg) {
+									if (+mtg.beg_tm == 0 && (+mtg.end_tm == 0 || +mtg.end_tm == 1200))
+										return '';
+								
+									return '\
+										<tr title="' + mtg.instructors.sort().map(function (instr) { return instr.split(',')[0]; }).join('; ') + '">\
+											<td class="' +  mtg.im + '">' + (mtg.im !== 'XX' ? im[mtg.im] + ':' : '') + '</td>\
+											<td>' + mtg.days.replace(/-/g, '') + '</td>\
+											<td>' + (Math.floor(mtg.beg_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.beg_tm % 100)).substr(-2) + '&ndash;' +
+												(Math.floor(mtg.end_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.end_tm % 100)).substr(-2) + (mtg.end_tm >= 1200 ? 'pm' : 'am') + 
+												(mtg.building || mtg.room ? ', ' : '') + mtg.building + ' ' + mtg.room + '\
+											</td>\
+										</tr>';
+								}).join('') + '\
+									</table>\
+								</td>\
+								<td>' + sec.beg_date + '<br />' + sec.end_date + '</td>\
+								<td><span style="color: #666">enrolled</span>: ' + sec.reg_num + '<br /><span style="color: #666">max:</span> ' + sec.reg_max + '</td>\
+								<td>' + sec.units.toFixed(2) + '</td>\
+								<td><input type="checkbox" /></td>\
+							</tr>\
+						';
+					}).join('') + '\
+				</table>\
+				' + footnotes.map(function (footnote, i) {
+					return '<sup>' + (i + 1) + '</sup>' + footnote;
+				}).join('<br />') + '\
+			</td>';
 		
 		if (row.nextSibling)
 			row.parentNode.insertBefore(details, row.nextSibling);
@@ -105,7 +202,7 @@ function listCourses(courses) {
 			row.parentNode.appendChild(details);
 	};
 
-	table.innerHTML = courses.map(function (crs, i) {
+	listing.innerHTML = courses.map(function (crs, i) {
 		var instructors = [];
 		crs.sections.forEach(function (sec) {
 			sec.meetings.forEach(function (mtg) {
@@ -115,16 +212,18 @@ function listCourses(courses) {
 				}));
 			});
 		});
-		instructors = instructors.filter(function (x, i, a) { return a.indexOf(x) == i; });
+		instructors = instructors.unique();
 		//toSet(crs.sec.meetings.map(function (mtg) { return mtg.instructors; }));
 	
 		return '\
-			<tr data-index="' + i + '">\
-				<!--td>' + colorCourseName(crs.crs_no) + /*"&#8209;" + sec.sec_no + */'</td-->\
-				<td>\
-					<div style="margin-bottom: 2px; line-height: 1.2em"><b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b> (<i>' + instructors.join('; ') + '</i>)</div> ' + (crs.abstr || '') + /*<br/>(' + instructors.join('; ') + ')' (sec.title ? '<br />' + sec.title : '') +*/ '</td>\
-				<td><button>View Details</button> <button>Save</button></td>\
-			</tr>';
+			<tr>\
+				<td data-index="' + i + '">\
+					<div>\
+						<b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b> (<i>' + instructors.join('; ') + '</i>)</div>\
+					</div>' + (crs.abstr || '') + '\
+				</td>\
+				<td><input type="checkbox" /></td>\
+			</td>';
 		}).join('');
 	/*
 				<td>' + sec.units.toFixed(2) + '</td>\
