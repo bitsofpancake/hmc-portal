@@ -2,7 +2,7 @@ var Catalog = new function () {
 	var self = this;
 
 	var imTable = {
-		'CL': 'clinic', 
+		'CL': 'clinic',
 		'CQ': 'colloquium',
 		'DC': 'discussion',
 		'DS': 'independent study', // directed study
@@ -10,14 +10,14 @@ var Catalog = new function () {
 		'FS': 'seminar', // freshman seminar
 		'IP': 'internship',
 		'IS': 'independent study',
-		'LB': 'lab', 
-		'LC': 'lecture', 
+		'LB': 'lab',
+		'LC': 'lecture',
 		'LD': 'discussion',
 		'LL': 'lecture/lab',
 		'LO': 'LO', // cancelled?
-		'PE': 'PE', 
-		'PR': 'practicum', 
-		'RC': 'recitation', 
+		'PE': 'PE',
+		'PR': 'practicum',
+		'RC': 'recitation',
 		'RS': 'research',
 		'SE': 'seminar',
 		'ST': 'studio',
@@ -26,7 +26,7 @@ var Catalog = new function () {
 		'TS': 'test',
 		'XX': 'class'
 	};
-	
+
 	var catTable = {
 		'C': 'corequisite',
 		'N': 'concurrent'
@@ -36,7 +36,7 @@ var Catalog = new function () {
 	self.listCourses = function (_courses) {
 		console.log(_courses);
 		courses = _courses;
-		
+
 		// Fill the rows with courses!
 		document.querySelector('#courses').innerHTML = courses.map(function (crs, i) {
 			var instructors = [];
@@ -46,12 +46,13 @@ var Catalog = new function () {
 				});
 			});
 			instructors = instructors.unique();
-			
-			// 
+
+			//
 			var sectionsSaved = Courses.sectionsSaved(crs.crs_no);
-		
+
 			return '\
 				<tr data-index="' + i + '" class="' + (sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'courses-partially-saved')) + '">\
+					<td class="course-check" data-action="save"></td>\
 					<td class="course-entry">\
 						<div class="course-head" data-action="expand">\
 							<div class="course-title">\
@@ -59,24 +60,23 @@ var Catalog = new function () {
 							</div>' + (crs.abstr ? '<div class="course-abstr">' + crs.abstr + '</div>' : '') + '\
 						</div>\
 					</td>\
-					<td class="course-check" data-action="save">star</td>\
 				</td>';
 		}).join('');
-		
+
 		// Scroll to the top.
 		window.scroll(0, 0);
 	};
 
 	var actions = {
 		'expand': function (row, crs) {
-			
+
 			// Get rid of the old details if it's already showing.
 			var old = row.querySelector('.course-details');
 			if (old) {
 				old.parentNode.removeChild(old);
 				return;
 			}
-			
+
 			// Generate the requirements list.
 			var reqs = crs.reqs ? crs.reqs.map(function (reqgrp) {
 				return reqgrp.map(function (req) {
@@ -92,7 +92,7 @@ var Catalog = new function () {
 
 			// Make footnotes for the section requirements.
 			var footnotes = [];
-			
+
 			// Generate the HTML.
 			var details = document.createElement('div');
 			details.className = 'course-details';
@@ -100,18 +100,18 @@ var Catalog = new function () {
 					' + (reqs.length ? '<div class="course-reqs"><i>Requirements</i>: [' + reqs.join('] <span style="font-variant: small-caps">or</span> [') + ']</div>' : '') + '\
 					<table class="sections">\
 						' + crs.sections.map(function (sec) {
-											
+
 							var instructors = [];
 							sec.meetings.forEach(function (mtg) {
 								instructors = instructors.concat(mtg.instructors.map(function (instr) { return instr.join(' ').trim(); }));
 							});
 							instructors = instructors.unique().sort();
-							
+
 							var reqs = sec.reqs ? sec.reqs.map(function (req) {
 								var index = footnotes.indexOf(req);
 								return 1 + index || footnotes.push(req);
 							}).sort() : [];
-							
+
 							return '\
 								<tr class="section-row">\
 									<td class="section-head">\
@@ -124,12 +124,12 @@ var Catalog = new function () {
 									sec.meetings.map(function (mtg) {
 										if (+mtg.beg_tm == 0 && (+mtg.end_tm == 0 || +mtg.end_tm == 1200))
 											return '';
-									
+
 										return '\
 											<tr title="' + mtg.instructors.map(function (instr) { return instr.join(' '); }).sort().join('; ') + '">\
 												<td>' + (mtg.im !== 'XX' ? imTable[mtg.im] + ':' : '') + '</td>\
 												<td>' + mtg.days.replace(/-/g, '') + '</td>\
-												<td>' + formatTime(mtg.beg_tm, false) + '&ndash;' + formatTime(mtg.end_tm, true) + 
+												<td>' + formatTime(mtg.beg_tm, false) + '&ndash;' + formatTime(mtg.end_tm, true) +
 													(mtg.building || mtg.room ? ', ' : '') + mtg.building + ' ' + mtg.room + '\
 												</td>\
 											</tr>';
@@ -152,20 +152,20 @@ var Catalog = new function () {
 						return '<sup>' + (i + 1) + '</sup>' + footnote;
 					}).join('<br />') + '\
 					</div>';
-			
+
 			row.querySelector('.course-entry').appendChild(details);
 		},
-		
+
 		'save': function (row, crs) {
 			if (Courses.sectionsSaved(crs.crs_no).length)
 				Courses.removeCourse(crs);
 			else
 				Courses.saveCourse(crs);
-			
+
 			var sectionsSaved = Courses.sectionsSaved(crs.crs_no);
 			row.className = sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'course-partially-saved');
 		}
-	
+
 	}
 	
 	var categories = {
@@ -298,7 +298,7 @@ var Catalog = new function () {
 	
 	// When a course is clicked, perform the appropriate action.
 	document.querySelector('#courses').onclick = function (e) {
-	
+
 		// Get the course that was clicked on.
 		var index = '';
 		var el = e.target;
@@ -307,7 +307,7 @@ var Catalog = new function () {
 			action = action || el.getAttribute('data-action');
 			el = el.parentNode;
 		}
-		
+
 		if (index && actions[action])
 			actions[action](el, courses[+index])
 	};

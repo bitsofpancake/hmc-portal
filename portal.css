@@ -15,7 +15,7 @@ button:disabled {
 }
 
 a:link, a:visited, a:hover {
-	color: #6B21C9;
+	color: #4C9B00;
 	text-decoration: none;
 }
 a:hover {
@@ -44,13 +44,8 @@ header {
 }
 #nav {
 	text-align: center;
-	margin: 0 1em;
+	margin: 1em 1em;
 	line-height: 2.5em;
-}
-#nav h1 {
-	margin: 0 1em 0 0;
-	font-size: 1.1em;
-	font-weight: bold;
 }
 #nav a {
 	margin: 0.5em;
@@ -61,6 +56,7 @@ header {
 }
 
 header .view {
+	font-size: 0.8em;
 }
 
 .view {
@@ -69,19 +65,19 @@ header .view {
 body > .view {
 	margin: 0 auto;
 }
-body.catalog-view .catalog-view, 
-body.catalog-browse-view .catalog-browse-view, 
-body.catalog-list-view .catalog-list-view, 
+body.catalog-view .catalog-view,
+body.catalog-browse-view .catalog-browse-view,
+body.catalog-list-view .catalog-list-view,
 body.schedule-view .schedule-view,
-body.courses-view .courses-view 
+body.courses-view .courses-view
 {
 	display: block;
 }
 body.catalog-view .catalog-link,
 body.schedule-view .schedule-link,
 body.courses-view .courses-link
-{ 
-	font-weight: bold; 
+{
+	font-weight: bold;
 }
 
 /* Schedule */
@@ -106,7 +102,7 @@ body > .schedule-view {
 	text-align: center;
 }
 #schedule li {
-	padding: 2em 0.25em;	
+	padding: 2em 0.25em;
 }
 #schedule th {
 	padding: 0.25em;
@@ -164,7 +160,6 @@ body > .catalog-browse-view {
 	padding: 0;
 }
 
-
 /* Catalog list */
 body > .catalog-list-view {
 	width: 960px;
@@ -188,23 +183,23 @@ body > .catalog-list-view {
 	line-height: 1.5em;
 }
 #courses .course-check {
-	padding: 1em;
+	padding: 5px;
 	white-space: nowrap;
 	vertical-align: top;
 	cursor: pointer;
+    width: 30px;
+    font-size: 32px;
 }
-#courses .course-check input {
-	visibility: hidden;
+#courses .course-check:before {
+    content: "+";
 }
-/*
-#courses .course-entry:hover {
-	background-color: #fafaff;
-}*/
-#courses tr:hover .course-check input {
-	visibility: visible;
+#courses .course-check:hover {
+    color: #88C425;
 }
-#courses .course-saved .course-check {
-	background-color: green;
+#courses .course-saved .course-check:before {
+    content: "\2713";
+    color: #88C425;
+	font-size: 26px;
 }
 #courses .course-partially-saved .course-check {
 	background-color: yellow;
@@ -275,9 +270,6 @@ body > .catalog-list-view {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
-}
-#categories {
-	font-size: 0.8em;
 }
 #categories span {
 	font-weight: bold;
