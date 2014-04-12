@@ -37,17 +37,19 @@
 		</div>
 
 		<div class="view schedule-view">
-			<div id="controls">
+			<div id="controls" class="generated">
 				<div id="title">
-					Schedule <b id="page-number">1</b> of <b id="page-count">1</b>
+					<span class="show-generated">Schedule <b id="page-number">1</b> of <b id="page-count">1</b></span>
+					<span class="show-saved">Schedule <b id="page-number">1</b> of <b id="page-count">1</b></span>
 				</div>
 				
 				<ul id="actions">
-					<li><a id="schedule-save" href="#">save</a></li>
-					<!--li><a href="#">rename</a></li-->
-					<li><a href="#">export</a></li>
+					<li class="show-generated"><a id="schedule-save" href="#">save</a></li>
+					<li class="show-saved"><a id="schedule-unsave" href="#">unsave</a></li>
+					<li class="show-saved"><a id="schedule-rename" href="#">rename</a></li>
+					<!--li><a href="#">export</a></li-->
 					<li><a id="schedule-print" href="#">print</a></li>
-					<li><a href="#">share</a></li>
+					<!--li><a id="schedule-share" href="#">share</a></li-->
 				</ul>
 				
 				<ul id="pages">

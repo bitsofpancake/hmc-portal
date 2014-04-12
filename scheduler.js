@@ -25,7 +25,7 @@ var Scheduler = new function () {
 		schedules = _schedules;
 		if (schedules.length) {
 			current = 0;
-			self.draw(schedules[0]);
+			self.draw(schedules[0], true);
 			updateUI();
 		}
 		else
@@ -54,8 +54,8 @@ var Scheduler = new function () {
 	}
 	showSavedSchedules();
 	
-	document.querySelector('#page-left').onclick = function () { if (current > 0) { self.draw(schedules[--current]); updateUI(); } return false; };
-	document.querySelector('#page-right').onclick = function () { if (current + 1 < schedules.length) { self.draw(schedules[++current]); updateUI(); } return false; };
+	document.querySelector('#page-left').onclick = function () { if (current > 0) { self.draw(schedules[--current], true); updateUI(); } return false; };
+	document.querySelector('#page-right').onclick = function () { if (current + 1 < schedules.length) { self.draw(schedules[++current], true); updateUI(); } return false; };
 	document.querySelector('#schedule-print').onclick = function () { window.print(); return false; };
 	document.querySelector('#schedule-save').onclick = function () { 
 		Data.saveSchedule({
@@ -67,7 +67,7 @@ var Scheduler = new function () {
 	};
 	updateUI();
 
-	self.draw = function (schedule, f) {
+	self.draw = function (schedule, generated) {
 		var hourHeight = document.querySelector('#schedule li').offsetHeight;
 		
 		// Clear the schedule
@@ -75,6 +75,8 @@ var Scheduler = new function () {
 			while (day.firstChild)
 				day.removeChild(day.firstChild);
 		});
+		
+		document.querySelector('#controls').className = generated ? 'generated' : 'saved';
 		
 		if (!schedule.length)
 			return;
