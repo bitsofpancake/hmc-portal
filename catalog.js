@@ -48,7 +48,7 @@ var Catalog = new function () {
 			instructors = unique(instructors);
 
 			//
-			var sectionsSaved = Courses.sectionsSaved(crs.crs_no);
+			var sectionsSaved = Data.sectionsSaved(crs.crs_no);
 
 			return '\
 				<tr data-index="' + i + '" class="' + (sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'courses-partially-saved')) + '">\

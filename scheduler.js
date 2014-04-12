@@ -23,20 +23,25 @@ var Scheduler = new function () {
 	var current = 0;
 	self.load = function (_schedules) {
 		schedules = _schedules;
-		current = 0;
-		self.draw(schedules[0]);
-		updateUI();
+		if (schedules.length) {
+			current = 0;
+			self.draw(schedules[0]);
+			updateUI();
+		}
+		else
+			alert('No schedules are possible :(');
 	};
 	
 	function updateUI() {
 		document.querySelector('#page-number').innerHTML = schedules.length ? current + 1 : 0;
 		document.querySelector('#page-count').innerHTML = schedules.length;
-		document.querySelector('#page-left').disabled = current <= 0;
-		document.querySelector('#page-right').disabled = current + 1 >= schedules.length;
+		document.querySelector('#page-left').className = current <= 0 ? 'disabled' : '';
+		document.querySelector('#page-right').className = current + 1 >= schedules.length ? 'disabled' : '';
 	}
 	
-	document.querySelector('#page-left').onclick = function () { self.draw(schedules[--current]); updateUI(); };
-	document.querySelector('#page-right').onclick = function () { self.draw(schedules[++current]); updateUI(); };
+	document.querySelector('#page-left').onclick = function () { if (current > 0) { self.draw(schedules[--current]); updateUI(); } return false; };
+	document.querySelector('#page-right').onclick = function () { if (current + 1 < schedules.length) { self.draw(schedules[++current]); updateUI(); } return false; };
+	document.querySelector('#print').onclick = function () { window.print(); return false; };
 	updateUI();
 
 	self.draw = function (schedule) {

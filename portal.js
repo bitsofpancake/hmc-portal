@@ -22,7 +22,7 @@ var router = {
 		return 'schedule';
 	},
 	
-	'courses': function () {
+	'catalog/saved': function () {
 		Catalog.listCourses(Data.getCourses());
 		return 'catalog-list';
 	}
@@ -30,8 +30,6 @@ var router = {
 
 // The main router. Checks the hash and shows the correct view.
 window.onhashchange = function () {
-	if (window.location.hash === '#')
-		return;
 	
 	// Try each pattern until one matches.
 	var viewName = false;
@@ -53,7 +51,7 @@ window.onhashchange = function () {
 	
 	// No match.
 	document.body.className = '';
-	window.location.hash = '#';
+	window.location.hash = '#catalog';
 };
 
 // Route the current hash value.
