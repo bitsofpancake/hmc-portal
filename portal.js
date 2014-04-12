@@ -2,8 +2,6 @@
 if (window.location.protocol === 'https:')
 	window.location.replace('http://www.cs.hmc.edu/~cchu/portal/');
 
-var catalog = new Catalog();
-
 // Which page should be shown.
 var router = {
 	'catalog': function () {
@@ -11,14 +9,22 @@ var router = {
 	},
 
 	'catalog/(\\d{4})/(FA|SU|SP)/([A-Z]{1,5})': function (yr, sess, disc) {
-		document.querySelector('#cat').value = yr + '/' + sess;
-		document.querySelector('#disc').value = disc;
-		api('list/' + yr + '/' + sess + '/' + disc, catalog.listCourses);
+	/*	document.querySelector('#cat').value = yr + '/' + sess;
+		document.querySelector('#disc').value = disc;*/
+		api('list/' + yr + '/' + sess + '/' + disc, Catalog.listCourses);
 		return 'catalog-list';
 	},
 	
 	'schedule': function () {
+		setTimeout(function () {
+			Scheduler.load(Scheduler.generate(Courses.courses, []));
+		}, 100);
 		return 'schedule';
+	},
+	
+	'courses': function () {
+		Catalog.listCourses(Courses.courses);
+		return 'catalog-list';
 	}
 };
 
@@ -82,6 +88,10 @@ Array.prototype.unique = function () {
 function colorCourseName(name) {
 	var campus = name.substr('MATH131  '.length, 2);
 	return campus ? name.substr(0, 'MATH131  '.length) + '<span class="crs-' + campus + '">' + campus + '</span>' : name;
+}
+
+function formatTime(time, ampm) {
+	return (Math.floor(time / 100) % 12 || 12) + ':' + ('00' + (time % 100)).substr(-2) + (ampm ? (time >= 1200 ? 'pm' : 'am') : '');
 }
 
 function api(query, callback) {

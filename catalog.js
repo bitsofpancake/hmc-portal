@@ -1,4 +1,4 @@
-function Catalog() {
+var Catalog = new function () {
 	var self = this;
 
 	var imTable = {
@@ -32,49 +32,43 @@ function Catalog() {
 		'N': 'concurrent'
 	};
 
-	self.listCourses = function (courses) {
-		window.courses = courses;
-		console.log(courses);
+	var courses = [];
+	self.listCourses = function (_courses) {
+		console.log(_courses);
+		courses = _courses;
 		
 		// Fill the rows with courses!
 		document.querySelector('#courses').innerHTML = courses.map(function (crs, i) {
 			var instructors = [];
 			crs.sections.forEach(function (sec) {
 				sec.meetings.forEach(function (mtg) {
-					instructors = instructors.concat(mtg.instructors.map(function (name) {
-						name = name.split(', '); 
-						return (name[1] || '') + ' ' + name[0];
-					}));
+					instructors = instructors.concat(mtg.instructors.map(function (name) { return name.join(' ').trim(); }));
 				});
 			});
 			instructors = instructors.unique();
+			
+			// 
+			var sectionsSaved = Courses.sectionsSaved(crs.crs_no);
 		
 			return '\
-				<tr>\
+				<tr data-index="' + i + '" class="' + (sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'courses-partially-saved')) + '">\
 					<td class="course-entry">\
-						<div class="course-head" data-index="' + i + 'x">\
+						<div class="course-head" data-action="expand">\
 							<div class="course-title">\
-								<b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b> (<i>' + instructors.join('; ') + '</i>)\
+								<b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b>' + (instructors.length ? ' (<i>' + instructors.join('; ') + '</i>)' : '') + '\
 							</div>' + (crs.abstr ? '<div class="course-abstr">' + crs.abstr + '</div>' : '') + '\
 						</div>\
 					</td>\
-					<td class="course-check"><input type="checkbox" /></td>\
+					<td class="course-check" data-action="save">star</td>\
 				</td>';
 		}).join('');
 		
-		// When a course is clicked, expand the details.
-		document.querySelector('#courses').onclick = function (e) {
-		
-			// Get the course that was clicked on.
-			var index = '';
-			var row = e.target;
-			while (row && row.className !== 'course-entry') {
-				index = index || row.getAttribute('data-index');
-				row = row.parentNode;
-			}
-			if (!index)
-				return;
-			var crs = courses[parseInt(index, 10)];
+		// Scroll to the top.
+		window.scroll(0, 0);
+	};
+
+	var actions = {
+		'expand': function (row, crs) {
 			
 			// Get rid of the old details if it's already showing.
 			var old = row.querySelector('.course-details');
@@ -109,12 +103,9 @@ function Catalog() {
 											
 							var instructors = [];
 							sec.meetings.forEach(function (mtg) {
-								instructors = instructors.concat(mtg.instructors.map(function (name) {
-									name = name.split(', '); 
-									return (name[1] || '') + ' ' + name[0];
-								}));
+								instructors = instructors.concat(mtg.instructors.map(function (instr) { return instr.join(' ').trim(); }));
 							});
-							instructors = instructors.unique();
+							instructors = instructors.unique().sort();
 							
 							var reqs = sec.reqs ? sec.reqs.map(function (req) {
 								var index = footnotes.indexOf(req);
@@ -135,11 +126,10 @@ function Catalog() {
 											return '';
 									
 										return '\
-											<tr title="' + mtg.instructors.sort().map(function (instr) { return instr.split(',')[0]; }).join('; ') + '">\
+											<tr title="' + mtg.instructors.map(function (instr) { return instr.join(' '); }).sort().join('; ') + '">\
 												<td>' + (mtg.im !== 'XX' ? imTable[mtg.im] + ':' : '') + '</td>\
 												<td>' + mtg.days.replace(/-/g, '') + '</td>\
-												<td>' + (Math.floor(mtg.beg_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.beg_tm % 100)).substr(-2) + '&ndash;' +
-													(Math.floor(mtg.end_tm / 100) % 12 || 12) + ':' + ('00' + (mtg.end_tm % 100)).substr(-2) + (mtg.end_tm >= 1200 ? 'pm' : 'am') + 
+												<td>' + formatTime(mtg.beg_tm, false) + '&ndash;' + formatTime(mtg.end_tm, true) + 
 													(mtg.building || mtg.room ? ', ' : '') + mtg.building + ' ' + mtg.room + '\
 												</td>\
 											</tr>';
@@ -152,7 +142,7 @@ function Catalog() {
 										<span>max:</span> ' + sec.reg_max + '\
 									</td>\
 									<td class="section-units">' + (sec.units * (crs.crs_no.substr('MATH131  '.length, 2) === 'HM' ? 1 : 3)).toFixed(2) + '</td>\
-									<td class="section-check"><input type="checkbox" /></td>\
+									<td class="section-check"><input type="checkbox" checked /></td>\
 								</tr>\
 							';
 						}).join('') + '\
@@ -163,17 +153,41 @@ function Catalog() {
 					}).join('<br />') + '\
 					</div>';
 			
-			row.appendChild(details);
-		};
+			row.querySelector('.course-entry').appendChild(details);
+		},
+		
+		'save': function (row, crs) {
+			if (Courses.sectionsSaved(crs.crs_no).length)
+				Courses.removeCourse(crs);
+			else
+				Courses.saveCourse(crs);
 			
-		// Scroll to the top.
-		window.scroll(0, 0);
+			var sectionsSaved = Courses.sectionsSaved(crs.crs_no);
+			row.className = sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'course-partially-saved');
+		}
+	
+	}
+	
+	// When a course is clicked, perform the appropriate action.
+	document.querySelector('#courses').onclick = function (e) {
+	
+		// Get the course that was clicked on.
+		var index = '';
+		var el = e.target;
+		var action = false;
+		while (el && el.getAttribute && !(index = el.getAttribute('data-index'))) {
+			action = action || el.getAttribute('data-action');
+			el = el.parentNode;
+		}
+		
+		if (index && actions[action])
+			actions[action](el, courses[+index])
 	};
-
+/*
 	document.querySelector('#search').onsubmit = function () {
 		var cat = document.querySelector('#cat').value;
 		var disc = document.querySelector('#disc').value;
 		window.location.hash = '#catalog/' + cat + '/' + disc;
 		return false;
-	};
-}
+	};*/
+};

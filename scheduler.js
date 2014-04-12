@@ -1,11 +1,14 @@
-//function Scheduler() {
+var Scheduler = new function () {
+	var self = this;
+
 	function randomColor(seed) {
 		// Use a hash function (djb2) to generate a deterministic but "random" color.
-		var hash = 5381;
+		var hash = 5381 % 359;
 		for (var i = 0; i < seed.length; i++)
-			hash = ((hash << 5) + hash) + seed.charCodeAt(i);
+			hash = (((hash << 5) + hash) + seed.charCodeAt(i)) % 359;
 	
-		return 'hsl(' + (hash % 360) + ', 73%, 90%)'
+		return 'hsl(' + hash + ', 73%, 90%)'
+		// Even though we should use "% 360" for all possible values, using 359 makes for fewer hash collisions.
 	}
 	
 	// Converts a time string to a fraction (e.g. 1030 => 10.5)
@@ -15,8 +18,28 @@
 	
 	var days = Array.prototype.slice.call(document.querySelectorAll('.day'));
 	var beginHour = 8 - 0.5; // Starts at 8am
+	
+	var schedules = [];
+	var current = 0;
+	self.load = function (_schedules) {
+		schedules = _schedules;
+		current = 0;
+		self.draw(schedules[0]);
+		updateUI();
+	};
+	
+	function updateUI() {
+		document.querySelector('#page-number').innerHTML = schedules.length ? current + 1 : 0;
+		document.querySelector('#page-count').innerHTML = schedules.length;
+		document.querySelector('#page-left').disabled = current <= 0;
+		document.querySelector('#page-right').disabled = current + 1 >= schedules.length;
+	}
+	
+	document.querySelector('#page-left').onclick = function () { self.draw(schedules[--current]); updateUI(); };
+	document.querySelector('#page-right').onclick = function () { self.draw(schedules[++current]); updateUI(); };
+	updateUI();
 
-	function drawSchedule(schedule) {
+	self.draw = function (schedule) {
 		var hourHeight = document.querySelector('#schedule li').offsetHeight;
 		
 		// Clear the schedule
@@ -24,6 +47,9 @@
 			while (day.firstChild)
 				day.removeChild(day.firstChild);
 		});
+		
+		if (!schedule.length)
+			return;
 		
 		// Add each course
 		schedule.forEach(function (crs) {
@@ -41,8 +67,12 @@
 							
 					var div = document.createElement('div');
 					div.style.top = hourHeight * (timeToDecimal(mtg.beg_tm) - beginHour) + 'px';
-					div.style.backgroundColor = randomColor(crs.title);
-					div.innerHTML = '<b>' + crs.title + '-' + sec.sec_no + '</b>'/*(options.showSections && timeSlot.section ? 
+					div.style.backgroundColor = randomColor(crs.crs_no);
+					div.title = crs.title;
+					if (true)
+						div.innerHTML = '<b>' + crs.crs_no + '-' + sec.sec_no + '</b><br />' + mtg.instructors.map(function (instr) { return instr[1] }).join(', ') + '<br />' + formatTime(mtg.beg_tm, true) + ' - ' + formatTime(mtg.end_tm, true);
+						
+						/*(options.showSections && timeSlot.section ? 
 							timeSlot.section.replace(/^([^(]+)\((.*)\)/, function (_, code, profs) {
 								return '<b>' + code + '</b><br />' + profs;
 							}) 
@@ -61,34 +91,9 @@
 		});
 	}
 		
-	function generateSchedules(courses, optional) {
-	/*
-		// Take one section from each course and filter those that conflict.
-		var schedules = [];
-		var state = courses.map(function () { return 0; }); // Array of 0s.
-		while (true) {
+	self.generate = function (courses, optional) {
 		
-			// Check this possibility.
-			var schedule = courses.map(function (course, i) { return [course, state[i]]; };
-			if (!scheduleConflicts(schedule))
-				schedules.push(schedule);
-			
-			// Increment state.
-			var incremented = false;
-			for (var i = 0; i < courses.length; i++) {
-				if (state[i] < courses[i].sections.length - 1) {
-					state[i]++;
-					incremented = true;
-					break;
-				} else
-					state[i] = 0;
-			}
-			
-			// We've enumerated all possibilities.
-			if (!incremented)
-				break;
-		}*/
-		
+		// Generate possible schedules.
 		var schedules = [[]];
 		for (var i = 0; i < courses.length; i++) {
 			var newSchedules = [];
@@ -157,4 +162,4 @@
 		return false;
 	}
 
-//}
+}

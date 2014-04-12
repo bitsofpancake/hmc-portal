@@ -7,10 +7,9 @@
 	<body>
 		<header>
 			<div id="nav">
-				<h1>Course Scheduler</h1>
-				<a class="catalog-link" href="#catalog">Catalog</a>
-				<a class="courses-link" href="#courses">Courses</a>
-				<a class="schedule-link" href="#schedule">Schedules</a>
+				<h1>5cheduler</h1>
+				<a class="catalog-link" href="#catalog">Browse</a>
+				<a class="schedule-link" href="#schedule">Schedule</a>
 			</div>
 			
 			<form class="view schedule-view">
@@ -20,14 +19,18 @@
 					<option>Mwargph</option>
 				</select> <button type="submit">View</button>
 				
-				<button disabled>&lt;</button>
-				<button>&gt;</button>
+				<button type="button" id="page-left">&lt;</button>
+				<button type="button" id="page-right">&gt;</button>
 			</form>
 			
-			<form id="search" class="view catalog-view">
+			<ul class="view catalog-view">
+				<li><a href="#catalog/2014/FA/MATH">MATH: Mathematics</a></li>
+			</ul>
+			
+			<!--form id="search" class="view catalog-view">
 				<select id="cat">
 					<option value="2014/SP">2014 Spring</option>
-					<option value="2014/FA">2014 Fall</option>
+					<option value="2014/FA" selected>2014 Fall</option>
 				</select>
 				<select id="disc">
 					<option value="CHEM">CHEM: Chemistry</option>
@@ -39,7 +42,7 @@
 					<option value="WRIT">WRIT: Writing</option>
 					<option value="PE">PE: Physical Education</option>
 				</select> <button type="submit">List</button>
-			</form>
+			</form-->
 		</header>
 		
 		
@@ -78,6 +81,7 @@ LANGUAGE
 "SPNT": 'Spanish in Translation'
 
 ARTS and HUMANITIES
+'ARCN': 'Art Conservation',
 'ARHI': 'Art History',
 'ART': 'Studio Art',
 "CLAS": 'Classics',
@@ -120,9 +124,8 @@ SOCIAL SCIENCE
 "PSYC": 'Psychology'
 "SOC": 'Sociology'
 
-'ARCN': 'Art Conservation',
 "CREA": 'Creative Studies'
-"EA": 'Enviornmental Analysis'
+"EA": 'Environmental Analysis'
 "EDUC": 'Education'
 "FHS": 'Freshman Humanities Seminar'
 "FLAN": 'Foreign Languages'
@@ -160,9 +163,13 @@ SOCIAL SCIENCE
 			</pre>
 		</div>
 		
+		<div class="view courses-view">
+			Hello!
+		</div>
+		
 		<div class="view schedule-view">
 			<div id="controls">
-				<span>Schedule <b>1</b> of <b>1</b></span>
+				<span>Schedule <b id="page-number">1</b> of <b id="page-count">1</b></span>
 				<ul>
 					<li><a href="#">save</a></li>
 					<!--li><a href="#">rename</a></li-->
@@ -198,18 +205,19 @@ SOCIAL SCIENCE
 							<li>8pm</li>
 							<li>9pm</li>
 						</ol>
-						</td>
-					<td><div class="day"><div style="top: 234.5px; background-color: rgb(226, 249, 211); padding: 8.416666666666686px 0px; height: 39px;"><b>PHYS052 HM-01 </b><br>Sparks, Esin<br>11:00am - 11:50am</div><div style="top: 485.75px; background-color: rgb(249, 211, 211); padding: 22.375px 0px; height: 39px;"><b>LGCS010 PO-02 </b><br>Landman<br>2:45pm - 4:00pm</div><div style="top: 167.5px; background-color: rgb(241, 249, 211); padding: 8.416666666666686px 0px; height: 39px;"><b>MATH070 HM-01 </b><br>Pippenger<br>10:00am - 10:50am</div><div style="top: 385.25px; background-color: rgb(211, 249, 226); padding: 22.375px 0px; height: 39px;"><b>MATH131 HM-01 </b><br>Karp<br>1:15pm - 2:30pm</div></div></td>
-					<td><div class="day"><div style="top: 485.75px; background-color: rgb(226, 249, 211); padding: 22.375px 0px; height: 39px;"><b>PHYS052 HM-01 </b><br>Sparks, Esin<br>2:45pm - 4:00pm</div><div style="top: 301.5px; background-color: rgb(211, 211, 249); padding: 19.583333333333314px 0px; height: 39px;"><b>HIST132 PZ-01 </b><br>Wakefield<br>12:00pm - 1:10pm</div></div></td>
-					<td><div class="day"><div style="top: 234.5px; background-color: rgb(226, 249, 211); padding: 8.416666666666686px 0px; height: 39px;"><b>PHYS052 HM-01 </b><br>Sparks, Esin<br>11:00am - 11:50am</div><div style="top: 485.75px; background-color: rgb(249, 211, 211); padding: 22.375px 0px; height: 39px;"><b>LGCS010 PO-02 </b><br>Landman<br>2:45pm - 4:00pm</div><div style="top: 167.5px; background-color: rgb(241, 249, 211); padding: 8.416666666666686px 0px; height: 39px;"><b>MATH070 HM-01 </b><br>Pippenger<br>10:00am - 10:50am</div><div style="top: 385.25px; background-color: rgb(211, 249, 226); padding: 22.375px 0px; height: 39px;"><b>MATH131 HM-01 </b><br>Karp<br>1:15pm - 2:30pm</div></div></td>
-					<td><div class="day"><div style="top: 301.5px; background-color: rgb(211, 211, 249); padding: 19.583333333333314px 0px; height: 39px;"><b>HIST132 PZ-01 </b><br>Wakefield<br>12:00pm - 1:10pm</div></div></td>
-					<td><div class="day"><div style="top: 234.5px; background-color: rgb(226, 249, 211); padding: 8.416666666666686px 0px; height: 39px;"><b>PHYS052 HM-01 </b><br>Sparks, Esin<br>11:00am - 11:50am</div><div style="top: 167.5px; background-color: rgb(241, 249, 211); padding: 8.416666666666686px 0px; height: 39px;"><b>MATH070 HM-01 </b><br>Pippenger<br>10:00am - 10:50am</div><div style="top: 100.5px; background-color: rgb(249, 226, 211); padding: 8.416666666666686px 0px; height: 39px;"><b>MUS085B SC-01 </b><br>Simon<br>9:00am - 9:50am</div></div></td>
+					</td>
+					<td><div class="day"></div></td>
+					<td><div class="day"></div></td>
+					<td><div class="day"></div></td>
+					<td><div class="day"></div></td>
+					<td><div class="day"></div></td>
 				</tr>
 			</table>
 		</div>
 		
 		<script type="text/javascript" src="scheduler.js"></script>
 		<script type="text/javascript" src="catalog.js"></script>
+		<script type="text/javascript" src="courses.js"></script>
 		<script type="text/javascript" src="portal.js"></script>
 	</body>
 </html>
