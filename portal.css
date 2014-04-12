@@ -194,11 +194,14 @@ body > .catalog-list-view {
     content: "+";
 }
 #courses .course-check:hover {
-    color: #88C425;
+    color: #4C9B00;
+}
+#courses .course-saved .course-entry {
+	/*background-color: #EAF2D2;*/
 }
 #courses .course-saved .course-check:before {
     content: "\2713";
-    color: #88C425;
+    color: #4C9B00;
 	font-size: 26px;
 }
 #courses .course-partially-saved .course-check {
@@ -224,10 +227,10 @@ body > .catalog-list-view {
 	padding: 3px;
 }
 #courses .section-row:nth-child(odd) {
-	background-color: #F4F5FF !important;
+	background-color: #F3F8EF !important;
 }
 #courses .section-row:nth-child(even) {
-	background-color: #EDEEFF !important;
+	background-color: #E9F2E0 !important;
 }
 #courses .section-head {
 	text-align: left;
@@ -238,7 +241,7 @@ body > .catalog-list-view {
 	width: 10%;
 }
 #courses .section-numbers span {
-	color: #88a;
+	color: #8a8;
 }
 #courses .section-units, #courses .section-check {
 	width: 5%;
