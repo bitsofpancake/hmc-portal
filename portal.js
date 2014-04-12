@@ -15,9 +15,16 @@ var router = {
 		return 'catalog-list';
 	},
 	
-	'schedule': function () {
+	'schedules': function () {
 		setTimeout(function () {
 			Scheduler.load(Scheduler.generate(Data.getCourses(), []));
+		}, 100);
+		return 'schedule';
+	},
+	
+	'schedules/([A-Za-z0-9=-]+)': function (schedule) {
+		setTimeout(function () {
+			Scheduler.draw(JSON.parse(atob(schedule)));
 		}, 100);
 		return 'schedule';
 	},

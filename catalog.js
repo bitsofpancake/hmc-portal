@@ -170,34 +170,6 @@ var Catalog = new function () {
 	
 	var categories = {
 	
-		'Anthro': {
-			'AFRI': 'Africana Studies',
-			'AMST': 'American Studies',
-			'ASAM': 'Asian American Studies',
-			'ASIA': 'Asian Studies',
-			"CHST": 'Chicana/Chicano-Latina/Latino Studies',
-			"FGSS": 'Feminism, Gender, and Sexuality Studies',
-			"GFS": 'Gender and Feminist Studies',
-			"GWS": 'Gender and Women\'s Studies'
-		},
-		
-		'Language': {
-			'ARBC': 'Arabic',
-			"CHIN": 'Chinese',
-			"CHLT": 'Chican@/Latin@ Translation',
-			"CHNT": 'Chinese in Translation',
-			"FREN": 'French',
-			"GERM": 'German',
-			"GRMT": 'German in Translation',
-			"ITAL": 'Italian',
-			"JAPN": 'Japanese',
-			"KORE": 'Korean',
-			"PORT": 'Portuguese',
-			"RUSS": 'Russian',
-			"RUST": 'Russian in Translation',
-			"SPAN": 'Spanish',
-			"SPNT": 'Spanish in Translation'
-		},
 		
 		'Arts and Humanities': {
 			'ARCN': 'Art Conservation',
@@ -238,6 +210,35 @@ var Catalog = new function () {
 			"POLI": 'Politics',
 			"PSYC": 'Psychology',
 			"SOC": 'Sociology'
+		},
+		
+		'Language': {
+			'ARBC': 'Arabic',
+			"CHIN": 'Chinese',
+			"CHLT": 'Chican@/Latin@ Translation',
+			"CHNT": 'Chinese in Translation',
+			"FREN": 'French',
+			"GERM": 'German',
+			"GRMT": 'German in Translation',
+			"ITAL": 'Italian',
+			"JAPN": 'Japanese',
+			"KORE": 'Korean',
+			"PORT": 'Portuguese',
+			"RUSS": 'Russian',
+			"RUST": 'Russian in Translation',
+			"SPAN": 'Spanish',
+			"SPNT": 'Spanish in Translation'
+		},
+		
+		'Anthro': {
+			'AFRI': 'Africana Studies',
+			'AMST': 'American Studies',
+			'ASAM': 'Asian American Studies',
+			'ASIA': 'Asian Studies',
+			"CHST": 'Chicana/Chicano-Latina/Latino Studies',
+			"FGSS": 'Feminism, Gender, and Sexuality Studies',
+			"GFS": 'Gender and Feminist Studies',
+			"GWS": 'Gender and Women\'s Studies'
 		},
 		
 		'Other': {

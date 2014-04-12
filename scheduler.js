@@ -39,12 +39,35 @@ var Scheduler = new function () {
 		document.querySelector('#page-right').className = current + 1 >= schedules.length ? 'disabled' : '';
 	}
 	
+	function showSavedSchedules() {
+		var ss = document.querySelector('#saved-schedules');
+		ss.innerHTML = '';
+		
+		Data.getSchedules().forEach(function (schedule) {
+			var li = document.createElement('li');
+			var a = document.createElement('a');
+			a.href = '#schedules/' + btoa(JSON.stringify(schedule.schedule));
+			a.innerHTML = schedule.name;
+			li.appendChild(a);
+			ss.appendChild(li);
+		});
+	}
+	showSavedSchedules();
+	
 	document.querySelector('#page-left').onclick = function () { if (current > 0) { self.draw(schedules[--current]); updateUI(); } return false; };
 	document.querySelector('#page-right').onclick = function () { if (current + 1 < schedules.length) { self.draw(schedules[++current]); updateUI(); } return false; };
-	document.querySelector('#print').onclick = function () { window.print(); return false; };
+	document.querySelector('#schedule-print').onclick = function () { window.print(); return false; };
+	document.querySelector('#schedule-save').onclick = function () { 
+		Data.saveSchedule({
+			'name': prompt('What would you like to call this schedule?') || 'Untitled ' + (new Date()).toDateString().substr(4),
+			'schedule': schedules[current]
+		});
+		showSavedSchedules();
+		return false;
+	};
 	updateUI();
 
-	self.draw = function (schedule) {
+	self.draw = function (schedule, f) {
 		var hourHeight = document.querySelector('#schedule li').offsetHeight;
 		
 		// Clear the schedule

@@ -9,46 +9,19 @@
 			<div id="nav">
 				<img src="logo_small.png" alt="Scheduler" /><br />
 				<a class="catalog-link" href="#catalog">Browse</a>
-				<a class="schedule-link" href="#schedule">Schedule</a>
+				<a class="schedule-link" href="#schedules">Schedule</a>
 			</div>
-
-			<!--form class="view schedule-view">
-				<button type="button" id="page-left">&lt;</button>
-				<button type="button" id="page-right">&gt;</button>
-			</form-->
 			
-			<ul id="saved-schedules" class="view schedule-view">
+			<ul class="view schedule-view">
 				<li>
 					<span>Saved Schedules</span>
-					<ul>
-						<li><a href="#">Awesome schedule</a></li>
-						<li><a href="#">Yay</a></li>
-						<li><a href="#">Woah</a></li>
-						<li><a href="#">Hi</a></li>
-					</ul>
+					<ul id="saved-schedules"></ul>
 				</li>
 			</ul>
 			
 			<ul id="categories" class="view catalog-view">
 				<li><a href="#catalog/saved">Saved Courses</a></li>
 			</ul>
-			
-			<!--form id="search" class="view catalog-view">
-				<select id="cat">
-					<option value="2014/SP">2014 Spring</option>
-					<option value="2014/FA" selected>2014 Fall</option>
-				</select>
-				<select id="disc">
-					<option value="CHEM">CHEM: Chemistry</option>
-					<option value="CSCI">CSCI: Computer Science</option>
-					<option value="ENGR">ENGR: Engineering</option>
-					<option value="MATH">MATH: Mathematics</option>
-					<option value="PHYS">PHYS: Physics</option>
-					<option value="BIOL">BIOL: Biology</option>
-					<option value="WRIT">WRIT: Writing</option>
-					<option value="PE">PE: Physical Education</option>
-				</select> <button type="submit">List</button>
-			</form-->
 		</header>
 
 
@@ -65,15 +38,21 @@
 
 		<div class="view schedule-view">
 			<div id="controls">
-				<span>Schedule <b id="page-number">1</b> of <b id="page-count">1</b></span>
-				<a id="page-left" href="#">previous</a>
-				<a id="page-right" href="#">next</a>
-				<ul>
-					<li><a href="#">save</a></li>
+				<div id="title">
+					Schedule <b id="page-number">1</b> of <b id="page-count">1</b>
+				</div>
+				
+				<ul id="actions">
+					<li><a id="schedule-save" href="#">save</a></li>
 					<!--li><a href="#">rename</a></li-->
 					<li><a href="#">export</a></li>
-					<li><a id="print" href="#">print</a></li>
+					<li><a id="schedule-print" href="#">print</a></li>
 					<li><a href="#">share</a></li>
+				</ul>
+				
+				<ul id="pages">
+					<li><a id="page-right" href="#">next</a></li>
+					<li><a id="page-left" href="#">previous</a></li>
 				</ul>
 			</div>
 			<table id="schedule">
@@ -119,9 +98,9 @@
 			var DB_PREFIX = 'scheduler_';
 		</script>
 		
+		<script type="text/javascript" src="data.js"></script>
 		<script type="text/javascript" src="scheduler.js"></script>
 		<script type="text/javascript" src="catalog.js"></script>
-		<script type="text/javascript" src="data.js"></script>
 		<script type="text/javascript" src="portal.js"></script>
 	</body>
 </html>
