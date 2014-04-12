@@ -45,7 +45,7 @@ var Catalog = new function () {
 					instructors = instructors.concat(mtg.instructors.map(function (name) { return name.join(' ').trim(); }));
 				});
 			});
-			instructors = instructors.unique();
+			instructors = unique(instructors);
 
 			//
 			var sectionsSaved = Courses.sectionsSaved(crs.crs_no);
@@ -105,7 +105,7 @@ var Catalog = new function () {
 							sec.meetings.forEach(function (mtg) {
 								instructors = instructors.concat(mtg.instructors.map(function (instr) { return instr.join(' ').trim(); }));
 							});
-							instructors = instructors.unique().sort();
+							instructors = unique(instructors).sort();
 
 							var reqs = sec.reqs ? sec.reqs.map(function (req) {
 								var index = footnotes.indexOf(req);
@@ -157,12 +157,12 @@ var Catalog = new function () {
 		},
 
 		'save': function (row, crs) {
-			if (Courses.sectionsSaved(crs.crs_no).length)
-				Courses.removeCourse(crs);
+			if (Data.sectionsSaved(crs.crs_no).length)
+				Data.removeCourse(crs);
 			else
-				Courses.saveCourse(crs);
+				Data.saveCourse(crs);
 
-			var sectionsSaved = Courses.sectionsSaved(crs.crs_no);
+			var sectionsSaved = Data.sectionsSaved(crs.crs_no);
 			row.className = sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'course-partially-saved');
 		}
 

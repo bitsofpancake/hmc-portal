@@ -25,7 +25,9 @@
 				<li><a href="#">Hi</a></li>
 			</ul>
 			
-			<ul id="categories" class="view catalog-view"></ul>
+			<ul id="categories" class="view catalog-view">
+				<li><a href="#courses">Saved Courses</a></li>
+			</ul>
 			
 			<!--form id="search" class="view catalog-view">
 				<select id="cat">
@@ -163,10 +165,6 @@ SOCIAL SCIENCE
 			</pre>
 		</div>
 
-		<div class="view courses-view">
-			Hello!
-		</div>
-
 		<div class="view schedule-view">
 			<div id="controls">
 				<span>Schedule <b id="page-number">1</b> of <b id="page-count">1</b> &nbsp;&nbsp; <a href="#">previous</a> <a href="#">next</a></span>
@@ -218,11 +216,12 @@ SOCIAL SCIENCE
 		<script type="text/javascript">
 			var YEAR = 2014;
 			var SESS = 'FA';
+			var DB_PREFIX = 'scheduler_';
 		</script>
 		
 		<script type="text/javascript" src="scheduler.js"></script>
 		<script type="text/javascript" src="catalog.js"></script>
-		<script type="text/javascript" src="courses.js"></script>
+		<script type="text/javascript" src="data.js"></script>
 		<script type="text/javascript" src="portal.js"></script>
 	</body>
 </html>

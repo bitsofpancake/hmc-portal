@@ -17,13 +17,13 @@ var router = {
 	
 	'schedule': function () {
 		setTimeout(function () {
-			Scheduler.load(Scheduler.generate(Courses.courses, []));
+			Scheduler.load(Scheduler.generate(Data.getCourses(), []));
 		}, 100);
 		return 'schedule';
 	},
 	
 	'courses': function () {
-		Catalog.listCourses(Courses.courses);
+		Catalog.listCourses(Data.getCourses());
 		return 'catalog-list';
 	}
 };
@@ -81,8 +81,8 @@ function toSet(arrays) {
 	return s;
 }
 
-Array.prototype.unique = function () {
-	return this.filter(function (x, i, a) { return a.indexOf(x) == i; });
+function unique(arr) {
+	return arr.filter(function (x, i, a) { return a.indexOf(x) == i; });
 };
 
 function colorCourseName(name) {
