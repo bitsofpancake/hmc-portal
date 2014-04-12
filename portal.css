@@ -2,7 +2,7 @@ body {
 	font-family: "segoe ui", "helvetica neue", helvetica, sans-serif;
 	background-color: #fafafa;
 	font-size: 16px;
-	margin: 67px 0;
+	margin: 2em 0 0 15em;
 	padding: 1em;
 }
 select, input, button {
@@ -25,8 +25,8 @@ a:hover {
 header {
 	top: 0;
 	left: 0;
-	right: 0;
-	border-bottom: 1px solid #999;
+	bottom: 0;
+	width: 15em;
 	overflow: hidden;
 	padding: 1em;
 	background-color: white;
@@ -39,7 +39,6 @@ header {
 	line-height: 2.5em;
 }
 #nav h1 {
-	display: inline;
 	margin: 0 1em 0 0;
 	font-size: 1.1em;
 	font-weight: bold;
@@ -65,12 +64,14 @@ body > .view {
 body.catalog-view .catalog-view, 
 body.catalog-browse-view .catalog-browse-view, 
 body.catalog-list-view .catalog-list-view, 
-body.schedule-view .schedule-view 
+body.schedule-view .schedule-view,
+body.courses-view .courses-view 
 {
 	display: block;
 }
 body.catalog-view .catalog-link,
-body.schedule-view .schedule-link
+body.schedule-view .schedule-link,
+body.courses-view .courses-link
 { 
 	font-weight: bold; 
 }
@@ -97,7 +98,7 @@ body > .schedule-view {
 	text-align: center;
 }
 #schedule li {
-	padding: 1.7em 0.25em;	
+	padding: 2em 0.25em;	
 }
 #schedule th {
 	padding: 0.25em;
@@ -179,18 +180,27 @@ body > .catalog-list-view {
 	line-height: 1.5em;
 }
 #courses .course-check {
-	visibility: hidden;
 	padding: 1em;
 	white-space: nowrap;
 	vertical-align: top;
+	cursor: pointer;
+}
+#courses .course-check input {
+	visibility: hidden;
 }
 /*
 #courses .course-entry:hover {
 	background-color: #fafaff;
-}
-#courses tr:hover .course-check {
-	visibility: visible;
 }*/
+#courses tr:hover .course-check input {
+	visibility: visible;
+}
+#courses .course-saved .course-check {
+	background-color: green;
+}
+#courses .course-partially-saved .course-check {
+	background-color: yellow;
+}
 
 #courses .course-details {
 	margin-top: 1em;
