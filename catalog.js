@@ -168,6 +168,134 @@ var Catalog = new function () {
 	
 	}
 	
+	var categories = {
+	
+		'Anthro': {
+			'AFRI': 'Africana Studies',
+			'AMST': 'American Studies',
+			'ASAM': 'Asian American Studies',
+			'ASIA': 'Asian Studies',
+			"CHST": 'Chicana/Chicano-Latina/Latino Studies',
+			"FGSS": 'Feminism, Gender, and Sexuality Studies',
+			"GFS": 'Gender and Feminist Studies',
+			"GWS": 'Gender and Women\'s Studies'
+		},
+		
+		'Language': {
+			'ARBC': 'Arabic',
+			"CHIN": 'Chinese',
+			"CHLT": 'Chican@/Latin@ Translation',
+			"CHNT": 'Chinese in Translation',
+			"FREN": 'French',
+			"GERM": 'German',
+			"GRMT": 'German in Translation',
+			"ITAL": 'Italian',
+			"JAPN": 'Japanese',
+			"KORE": 'Korean',
+			"PORT": 'Portuguese',
+			"RUSS": 'Russian',
+			"RUST": 'Russian in Translation',
+			"SPAN": 'Spanish',
+			"SPNT": 'Spanish in Translation'
+		},
+		
+		'Arts and Humanities': {
+			'ARCN': 'Art Conservation',
+			'ARHI': 'Art History',
+			'ART': 'Studio Art',
+			"CLAS": 'Classics',
+			"DANC": 'Dance',
+			"ENGL": 'English',
+			"LAMS": 'Late Antique/Medieval Studies',
+			"LIT": 'Literature',
+			"MUS": 'Music',
+			"PHIL": 'Philosophy',
+			"THEA": 'Theatre'
+		},
+		
+		'Math and Science': {
+			'AISS': 'Accelerated Integrated Science Sequence',
+			'AS': 'Aerospace Studies',
+			'ASTR': 'Astronomy',
+			'BIOL': 'Biology',
+			'CHEM': 'Chemistry',
+			"CSCI": 'Computer Science',
+			"CSMT": 'Computer Science/Mathematics',
+			"ENGR": 'Engineering',
+			"GEOL": 'Geology',
+			"MATH": 'Mathematics',
+			"MOBI": 'Molecular Biology',
+			"NEUR": 'Neuroscience',
+			"PHYS": 'Physics',
+		},
+
+		'Social Science': {
+			'ANTH': 'Anthropology',
+			"ECON": 'Economics',
+			"HIST": 'History',
+			"IR": 'International Relations',
+			"LGCS": 'Linguistics and Cognitive Science',
+			"POLI": 'Politics',
+			"PSYC": 'Psychology',
+			"SOC": 'Sociology'
+		},
+		
+		'Other': {
+			"CL": 'Core Lab',
+			"CORE": 'Core',
+			"CREA": 'Creative Studies',
+			"EA": 'Environmental Analysis',
+			"EDUC": 'Education',
+			"FHS": 'Freshman Humanities Seminar',
+			"FLAN": 'Foreign Languages',
+			"GOVT": 'Government',
+			"HMSC": 'Humanities Major: Culture',
+			"HSID": 'History of Ideas',
+			"HUM": 'Humanities',
+			"ID": 'Interdisciplinary Studies',
+			"IE": 'Integrative Experience',
+			"IIS": 'International/Intercultural Studies',
+			"LAST": 'Latin American Studies',
+			"LGST": 'Legal Studies',
+			"MCSI": 'Monroe Center, Social Inquiry',
+			"MES": 'Middle Eastern Studies',
+			"MGT": 'Management',
+			"MILS": 'Military Science',
+			"MLLC": 'Modern Language, Literature, and Culture',
+			"MS": 'Media Studies',
+			"ONT": 'Ontario Program',
+			"ORST": 'Organizational Studies',
+			"OSCI": 'Interdisciplinary/Other Science',
+			"PE": 'Physical Education',
+			"POST": 'Political Studies',
+			"PP": 'Politics and Policy',
+			"PPA": 'Public Policy Analysis',
+			"PPE": 'Philosophy, Politics, and Economics',
+			"REL": 'Religion',
+			"RLIT": 'Romance Literatures',
+			"RLST": 'Religious Studies',
+			"SPCH": 'Speech',
+			"SPE": 'School of Politics and Economics',
+			"STS": 'Science, Technology, Society',
+			"THES": 'Senior Thesis',
+			"WRIT": 'Writing'
+		}
+	};
+	
+	// Populate the categories list.
+	for (var cat in categories) {
+		var catEl = document.createElement('li');
+		catEl.innerHTML = '<span>' + cat + '</span>';
+		var discsEl = document.createElement('ul');
+		for (var disc in categories[cat]) {
+			var discEl = document.createElement('li');
+			discEl.innerHTML = '<a href="#catalog/' + YEAR + '/' + SESS + '/' + disc + '">' + disc + ': ' + categories[cat][disc] + '</a>';
+			discsEl.appendChild(discEl);
+		}
+		catEl.appendChild(discsEl);
+		document.querySelector('#categories').appendChild(catEl);
+	}
+	
 	// When a course is clicked, perform the appropriate action.
 	document.querySelector('#courses').onclick = function (e) {
 	
