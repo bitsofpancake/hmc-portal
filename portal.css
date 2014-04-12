@@ -270,6 +270,11 @@ body > .catalog-list-view {
 	text-align: left;
 }
 
+#categories ul li {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
 #categories {
 	font-size: 0.8em;
 }
