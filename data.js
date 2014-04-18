@@ -39,4 +39,42 @@ var Data = new function () {
 		});
 		saveSchedules();
 	};*/
+	
+	self.export = function () {
+			
+		function randomColor(seed) {
+			// Use a hash function (djb2) to generate a deterministic but "random" color.
+			var hash = 5381 % 359;
+			for (var i = 0; i < seed.length; i++)
+				hash = (((hash << 5) + hash) + seed.charCodeAt(i)) % 359;
+		
+			return 'hsl(' + hash + ', 73%, 90%)'
+			// Even though we should use "% 360" for all possible values, using 359 makes for fewer hash collisions.
+		}
+		
+		var currentCourses = JSON.parse(localStorage.courses);
+		localStorage.courses = JSON.stringify(courses.map(function (crs) {
+			return {
+				'name': crs.title,
+				'selected': currentCourses.some(function (c) { return c.data.courseCode === crs.crs_no && c.selected; }),
+				'times': crs.sections.map(function (sec) {
+					var instructors = [];
+					sec.meetings.forEach(function (mtg) {
+						instructors = instructors.concat(mtg.instructors.map(function (instr) { return instr[1].trim(); }));
+					});
+					instructors = unique(instructors).sort();
+					
+					return crs.crs_no + '-' + sec.sec_no + ' (' + instructors.join(', ') + '): ' + sec.meetings.map(function (mtg) {
+						return mtg.days.replace(/-/g, '') + ' ' + formatTime(mtg.beg_tm, true) + '-' + formatTime(mtg.end_tm, true);
+					}).join(', ');
+				}).join('\n'),
+				'color': randomColor(crs.crs_no),
+				'data': {
+					'courseCode': crs.crs_no,
+					'courseName': crs.title,
+					'credits': crs.sections[0].units / (crs.crs_no.indexOf(' HM') > -1 ? 3 : 1)
+				}
+			};
+		}));
+	};
 };

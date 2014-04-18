@@ -11,7 +11,7 @@ var router = {
 	'catalog/(\\d{4})/(FA|SU|SP)/([A-Z]{1,5})': function (yr, sess, disc) {
 	/*	document.querySelector('#cat').value = yr + '/' + sess;
 		document.querySelector('#disc').value = disc;*/
-		api('list/' + yr + '/' + sess + '/' + disc, Catalog.listCourses);
+		api(yr + '/' + sess + '?disc=' + disc, Catalog.listCourses);
 		return 'catalog-list';
 	},
 	
@@ -102,7 +102,6 @@ function formatTime(time, ampm) {
 function api(query, callback) {
 	var req = new XMLHttpRequest();
 	req.open('GET', 'http://cs.hmc.edu:41783/' + query);
-	req.withCredentials = true;
 	req.onreadystatechange = function () {
 		if (req.readyState != 4)
 			return;
@@ -112,7 +111,7 @@ function api(query, callback) {
 			return;
 		}
 		
-		callback(JSON.parse(req.responseText));
+		callback(JSON.parse(req.responseText).data);
 	};
 	req.send(null);
 }
