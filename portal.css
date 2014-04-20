@@ -2,7 +2,7 @@ body {
 	font-family: "segoe ui", "helvetica neue", helvetica, sans-serif;
 	background-color: #fafafa;
 	font-size: 16px;
-	margin: 2em 0 0 15em;
+	margin: 2em 0 0 272px;
 	padding: 1em;
 }
 select, input, button {
@@ -12,6 +12,9 @@ select, input, button {
 }
 button:disabled {
 	opacity: 0.5;
+}
+template {
+	display: none;
 }
 
 a:link, a:visited, a:hover {
@@ -77,25 +80,8 @@ header .view {
 	font-size: 0.8em;
 }
 
-.view {
-	display: none;
-}
-body > .view {
+#main {
 	margin: 0 auto;
-}
-body.catalog-view .catalog-view,
-body.catalog-browse-view .catalog-browse-view,
-body.catalog-list-view .catalog-list-view,
-body.schedule-view .schedule-view,
-body.courses-view .courses-view
-{
-	display: block;
-}
-body.catalog-view .catalog-link,
-body.schedule-view .schedule-link,
-body.courses-view .courses-link
-{
-	font-weight: bold;
 }
 
 /* Schedule */
@@ -155,10 +141,6 @@ body > .schedule-view {
 	}
 }
 
-/* Catalog browse */
-body > .catalog-browse-view {
-	width: 8in;
-}
 #controls {
 	margin: 0.5em 5px;
 	overflow: hidden;
@@ -195,6 +177,10 @@ body > .catalog-browse-view {
 	padding-left: 1em;
 }
 
+/* Catalog browse */
+body > .catalog-browse-view {
+	width: 8in;
+}
 body > .catalog-browse-view h1 {
 	font-family: helvetica;
 	font-size: 3em;
@@ -206,12 +192,11 @@ body > .catalog-browse-view div {
 }
 
 /* Catalog list */
-body > .catalog-list-view {
+#courses {
+	display: block;
+	margin: 0 auto;
 	width: 960px;
 	font-size: 0.9em;
-}
-.catalog-list-view > table {
-	width: 100%;
 }
 #courses .course-entry {
 	background-color: #fff;

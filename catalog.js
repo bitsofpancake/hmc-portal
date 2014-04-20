@@ -1,89 +1,22 @@
-var Catalog = new function () {
-	var self = this;
+Scheduler.controller('Catalog', function ($scope, $http, $routeParams) {
 
-	var imTable = {
-		'CL': 'clinic',
-		'CQ': 'colloquium',
-		'DC': 'discussion',
-		'DS': 'independent study', // directed study
-		'FM': 'film',
-		'FS': 'seminar', // freshman seminar
-		'IP': 'internship',
-		'IS': 'independent study',
-		'LB': 'lab',
-		'LC': 'lecture',
-		'LD': 'discussion',
-		'LL': 'lecture/lab',
-		'LO': 'LO', // cancelled?
-		'PE': 'PE',
-		'PR': 'practicum',
-		'RC': 'recitation',
-		'RS': 'research',
-		'SE': 'seminar',
-		'ST': 'studio',
-		'SX': 'thesis', // senior thesis
-		'SS': 'seminar', // senior seminar
-		'TS': 'test',
-		'XX': 'class'
-	};
+	if (!/^\d{4}$/.test($routeParams.year) || !/^(SP|SU|FA)$/.test($routeParams.sess) || !/^[A-Z0-9]{3,5}$/.test($routeParams.disc))
+		return;
 
-	var catTable = {
-		'C': 'corequisite',
-		'N': 'concurrent'
-	};
-
-	var courses = [];
-	self.listCourses = function (_courses) {
-		console.log(_courses);
-		courses = _courses;
-
-		// Fill the rows with courses!
-		document.querySelector('#courses').innerHTML = courses.map(function (crs, i) {
-			var instructors = [];
-			crs.sections.forEach(function (sec) {
-				sec.meetings.forEach(function (mtg) {
-					instructors = instructors.concat(mtg.instructors.map(function (name) { return name.join(' ').trim(); }));
-				});
-			});
-			instructors = unique(instructors);
-
-			//
-			var sectionsSaved = Data.sectionsSaved(crs.crs_no);
-
-			return '\
-				<tr data-index="' + i + '" class="' + (sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'courses-partially-saved')) + '">\
-					<td class="course-check" data-action="save"></td>\
-					<td class="course-entry">\
-						<div class="course-head" data-action="expand">\
-							<div class="course-title">\
-								<b>' + colorCourseName(crs.crs_no) + ' - ' + crs.title + '</b>' + (instructors.length ? ' (<i>' + instructors.join('; ') + '</i>)' : '') + '\
-							</div>' + (crs.abstr ? '<div class="course-abstr">' + crs.abstr + '</div>' : '') + '\
-						</div>\
-					</td>\
-				</td>';
-		}).join('');
-
-		// Scroll to the top.
-		window.scroll(0, 0);
-	};
-
-	var actions = {
-		'expand': function (row, crs) {
-
-			// Get rid of the old details if it's already showing.
-			var old = row.querySelector('.course-details');
-			if (old) {
-				old.parentNode.removeChild(old);
-				return;
-			}
-
+	api($routeParams.year + '/' + $routeParams.sess + '?disc=' + $routeParams.disc, function (courses) {
+		console.log($scope.courses = courses);
+		$scope.$apply();
+	});
+	
+// var sectionsSaved = Data.sectionsSaved(crs.crs_no);
+/*
 			// Generate the requirements list.
 			var reqs = crs.reqs ? crs.reqs.map(function (reqgrp) {
 				return reqgrp.map(function (req) {
 					if (req.type === 'course') {
-						// The course number is funny -- FREN1***** means FREN 100 or greater. Make it more intuitive to understand.
-						var crs_no = (req.crs_no + '******').substr(0, 'MATH131'.length).replace(/\*/g, 'x') + req.crs_no.substr('MATH131'.length).replace(/\*/g, ' ');
-						return '<b title="with at least a ' + req.grade + '">' + colorCourseName(crs_no).trim() + '</b>' + (req.category !== 'P' ? ' (' + catTable[req.category] + ')' : '');
+						// The course number is funny -- FREN1***** means FREN 100 or greater. Make it more intuitive to understand. */
+						//var crs_no = (req.crs_no + '******').substr(0, 'MATH131'.length).replace(/\*/g, 'x') + req.crs_no.substr('MATH131'.length).replace(/\*/g, ' ');
+						/*return '<b title="with at least a ' + req.grade + '">' + colorCourseName(crs_no).trim() + '</b>' + (req.category !== 'P' ? ' (' + catTable[req.category] + ')' : '');
 					}
 					else if (req.type === 'exam')
 						return '<b>' + req.exam + '</b> (' + req.score + ')';
@@ -154,169 +87,148 @@ var Catalog = new function () {
 					</div>';
 
 			row.querySelector('.course-entry').appendChild(details);
-		},
+		}*/
 
-		'save': function (row, crs) {
-			if (Data.sectionsSaved(crs.crs_no).length)
-				Data.removeCourse(crs);
-			else
-				Data.saveCourse(crs);
-
-			var sectionsSaved = Data.sectionsSaved(crs.crs_no);
-			row.className = sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'course-partially-saved');
-		}
-
+	$scope.save = function (crs) {
+		if (Data.sectionsSaved(crs.crs_no).length)
+			Data.removeCourse(crs);
+		else
+			Data.saveCourse(crs);
+		crs._saved = !crs._saved;
+		/*
+		var sectionsSaved = Data.sectionsSaved(crs.crs_no);
+		row.className = sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'course-partially-saved');*/
 	}
 	
-	var categories = {
-	
-		
-		'Arts and Humanities': {
-			'ARCN': 'Art Conservation',
-			'ARHI': 'Art History',
-			'ART': 'Studio Art',
-			"CLAS": 'Classics',
-			"DANC": 'Dance',
-			"ENGL": 'English',
-			"LAMS": 'Late Antique/Medieval Studies',
-			"LIT": 'Literature',
-			"MUS": 'Music',
-			"PHIL": 'Philosophy',
-			"THEA": 'Theatre'
-		},
-		
-		'Math and Science': {
-			'AISS': 'Accelerated Integrated Science Sequence',
-			'AS': 'Aerospace Studies',
-			'ASTR': 'Astronomy',
-			'BIOL': 'Biology',
-			'CHEM': 'Chemistry',
-			"CSCI": 'Computer Science',
-			"CSMT": 'Computer Science/Mathematics',
-			"ENGR": 'Engineering',
-			"GEOL": 'Geology',
-			"MATH": 'Mathematics',
-			"MOBI": 'Molecular Biology',
-			"NEUR": 'Neuroscience',
-			"PHYS": 'Physics',
-		},
 
-		'Social Science': {
-			'ANTH': 'Anthropology',
-			"ECON": 'Economics',
-			"HIST": 'History',
-			"IR": 'International Relations',
-			"LGCS": 'Linguistics and Cognitive Science',
-			"POLI": 'Politics',
-			"PSYC": 'Psychology',
-			"SOC": 'Sociology'
-		},
-		
-		'Language': {
-			'ARBC': 'Arabic',
-			"CHIN": 'Chinese',
-			"CHLT": 'Chican@/Latin@ Translation',
-			"CHNT": 'Chinese in Translation',
-			"FREN": 'French',
-			"GERM": 'German',
-			"GRMT": 'German in Translation',
-			"ITAL": 'Italian',
-			"JAPN": 'Japanese',
-			"KORE": 'Korean',
-			"PORT": 'Portuguese',
-			"RUSS": 'Russian',
-			"RUST": 'Russian in Translation',
-			"SPAN": 'Spanish',
-			"SPNT": 'Spanish in Translation'
-		},
-		
-		'Anthro': {
-			'AFRI': 'Africana Studies',
-			'AMST': 'American Studies',
-			'ASAM': 'Asian American Studies',
-			'ASIA': 'Asian Studies',
-			"CHST": 'Chicana/Chicano-Latina/Latino Studies',
-			"FGSS": 'Feminism, Gender, and Sexuality Studies',
-			"GFS": 'Gender and Feminist Studies',
-			"GWS": 'Gender and Women\'s Studies'
-		},
-		
-		'Other': {
-			"CL": 'Core Lab',
-			"CORE": 'Core',
-			"CREA": 'Creative Studies',
-			"EA": 'Environmental Analysis',
-			"EDUC": 'Education',
-			"FHS": 'Freshman Humanities Seminar',
-			"FLAN": 'Foreign Languages',
-			"GOVT": 'Government',
-			"HMSC": 'Humanities Major: Culture',
-			"HSID": 'History of Ideas',
-			"HUM": 'Humanities',
-			"ID": 'Interdisciplinary Studies',
-			"IE": 'Integrative Experience',
-			"IIS": 'International/Intercultural Studies',
-			"LAST": 'Latin American Studies',
-			"LGST": 'Legal Studies',
-			"MCSI": 'Monroe Center, Social Inquiry',
-			"MES": 'Middle Eastern Studies',
-			"MGT": 'Management',
-			"MILS": 'Military Science',
-			"MLLC": 'Modern Language, Literature, and Culture',
-			"MS": 'Media Studies',
-			"ONT": 'Ontario Program',
-			"ORST": 'Organizational Studies',
-			"OSCI": 'Interdisciplinary/Other Science',
-			"PE": 'Physical Education',
-			"POST": 'Political Studies',
-			"PP": 'Politics and Policy',
-			"PPA": 'Public Policy Analysis',
-			"PPE": 'Philosophy, Politics, and Economics',
-			"REL": 'Religion',
-			"RLIT": 'Romance Literatures',
-			"RLST": 'Religious Studies',
-			"SPCH": 'Speech',
-			"SPE": 'School of Politics and Economics',
-			"STS": 'Science, Technology, Society',
-			"THES": 'Senior Thesis',
-			"WRIT": 'Writing'
-		}
-	};
+});
+
+
+var categories = {
+
 	
-	// Populate the categories list.
-	for (var cat in categories) {
-		var catEl = document.createElement('li');
-		catEl.innerHTML = '<span>' + cat + '</span>';
-		var discsEl = document.createElement('ul');
-		for (var disc in categories[cat]) {
-			var discEl = document.createElement('li');
-			discEl.innerHTML = '<a href="#catalog/' + YEAR + '/' + SESS + '/' + disc + '">' + disc + ': ' + categories[cat][disc] + '</a>';
-			discsEl.appendChild(discEl);
-		}
-		catEl.appendChild(discsEl);
-		document.querySelector('#categories').appendChild(catEl);
+	'Arts and Humanities': {
+		'ARCN': 'Art Conservation',
+		'ARHI': 'Art History',
+		'ART': 'Studio Art',
+		"CLAS": 'Classics',
+		"DANC": 'Dance',
+		"ENGL": 'English',
+		"LAMS": 'Late Antique/Medieval Studies',
+		"LIT": 'Literature',
+		"MUS": 'Music',
+		"PHIL": 'Philosophy',
+		"THEA": 'Theatre'
+	},
+	
+	'Math and Science': {
+		'AISS': 'Accelerated Integrated Science Sequence',
+		'AS': 'Aerospace Studies',
+		'ASTR': 'Astronomy',
+		'BIOL': 'Biology',
+		'CHEM': 'Chemistry',
+		"CSCI": 'Computer Science',
+		"CSMT": 'Computer Science/Mathematics',
+		"ENGR": 'Engineering',
+		"GEOL": 'Geology',
+		"MATH": 'Mathematics',
+		"MOBI": 'Molecular Biology',
+		"NEUR": 'Neuroscience',
+		"PHYS": 'Physics',
+	},
+
+	'Social Science': {
+		'ANTH': 'Anthropology',
+		"ECON": 'Economics',
+		"HIST": 'History',
+		"IR": 'International Relations',
+		"LGCS": 'Linguistics and Cognitive Science',
+		"POLI": 'Politics',
+		"PSYC": 'Psychology',
+		"SOC": 'Sociology'
+	},
+	
+	'Language': {
+		'ARBC': 'Arabic',
+		"CHIN": 'Chinese',
+		"CHLT": 'Chican@/Latin@ Translation',
+		"CHNT": 'Chinese in Translation',
+		"FREN": 'French',
+		"GERM": 'German',
+		"GRMT": 'German in Translation',
+		"ITAL": 'Italian',
+		"JAPN": 'Japanese',
+		"KORE": 'Korean',
+		"PORT": 'Portuguese',
+		"RUSS": 'Russian',
+		"RUST": 'Russian in Translation',
+		"SPAN": 'Spanish',
+		"SPNT": 'Spanish in Translation'
+	},
+	
+	'Anthro': {
+		'AFRI': 'Africana Studies',
+		'AMST': 'American Studies',
+		'ASAM': 'Asian American Studies',
+		'ASIA': 'Asian Studies',
+		"CHST": 'Chicana/Chicano-Latina/Latino Studies',
+		"FGSS": 'Feminism, Gender, and Sexuality Studies',
+		"GFS": 'Gender and Feminist Studies',
+		"GWS": 'Gender and Women\'s Studies'
+	},
+	
+	'Other': {
+		"CL": 'Core Lab',
+		"CORE": 'Core',
+		"CREA": 'Creative Studies',
+		"EA": 'Environmental Analysis',
+		"EDUC": 'Education',
+		"FHS": 'Freshman Humanities Seminar',
+		"FLAN": 'Foreign Languages',
+		"GOVT": 'Government',
+		"HMSC": 'Humanities Major: Culture',
+		"HSID": 'History of Ideas',
+		"HUM": 'Humanities',
+		"ID": 'Interdisciplinary Studies',
+		"IE": 'Integrative Experience',
+		"IIS": 'International/Intercultural Studies',
+		"LAST": 'Latin American Studies',
+		"LGST": 'Legal Studies',
+		"MCSI": 'Monroe Center, Social Inquiry',
+		"MES": 'Middle Eastern Studies',
+		"MGT": 'Management',
+		"MILS": 'Military Science',
+		"MLLC": 'Modern Language, Literature, and Culture',
+		"MS": 'Media Studies',
+		"ONT": 'Ontario Program',
+		"ORST": 'Organizational Studies',
+		"OSCI": 'Interdisciplinary/Other Science',
+		"PE": 'Physical Education',
+		"POST": 'Political Studies',
+		"PP": 'Politics and Policy',
+		"PPA": 'Public Policy Analysis',
+		"PPE": 'Philosophy, Politics, and Economics',
+		"REL": 'Religion',
+		"RLIT": 'Romance Literatures',
+		"RLST": 'Religious Studies',
+		"SPCH": 'Speech',
+		"SPE": 'School of Politics and Economics',
+		"STS": 'Science, Technology, Society',
+		"THES": 'Senior Thesis',
+		"WRIT": 'Writing'
 	}
-	
-	// When a course is clicked, perform the appropriate action.
-	document.querySelector('#courses').onclick = function (e) {
-
-		// Get the course that was clicked on.
-		var index = '';
-		var el = e.target;
-		var action = false;
-		while (el && el.getAttribute && !(index = el.getAttribute('data-index'))) {
-			action = action || el.getAttribute('data-action');
-			el = el.parentNode;
-		}
-
-		if (index && actions[action])
-			actions[action](el, courses[+index])
-	};
-/*
-	document.querySelector('#search').onsubmit = function () {
-		var cat = document.querySelector('#cat').value;
-		var disc = document.querySelector('#disc').value;
-		window.location.hash = '#catalog/' + cat + '/' + disc;
-		return false;
-	};*/
 };
+
+// Populate the categories list.
+for (var cat in categories) {
+	var catEl = document.createElement('li');
+	catEl.innerHTML = '<span>' + cat + '</span>';
+	var discsEl = document.createElement('ul');
+	for (var disc in categories[cat]) {
+		var discEl = document.createElement('li');
+		discEl.innerHTML = '<a href="#catalog/' + YEAR + '/' + SESS + '/' + disc + '">' + disc + ': ' + categories[cat][disc] + '</a>';
+		discsEl.appendChild(discEl);
+	}
+	catEl.appendChild(discsEl);
+	document.querySelector('#categories').appendChild(catEl);
+}

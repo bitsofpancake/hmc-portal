@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html ng-app="Scheduler">
 	<head>
 		<title>Portal</title>
 		<link rel="stylesheet" href="portal.css" type="text/css" />
@@ -23,12 +23,62 @@
 				<li><a href="#catalog/saved">Saved Courses</a></li>
 			</ul>
 		</header>
+	
+		<div id="main" ng-view></div>
 
-
-		<div class="view catalog-list-view">
-			<table><tbody id="courses"></tbody></table>
-		</div>
-
+		<template id="template-courses">
+			<table id="courses">
+				<tr ng-repeat="crs in courses" class="' + (sectionsSaved.length === 0 ? '' : (sectionsSaved.length === crs.sections.length ? 'course-saved' : 'courses-partially-saved')) + '">
+					<td class="course-check" data-action="save"></td>
+					<td class="course-entry">
+						<div class="course-head" ng-click="crs._expanded = !crs._expanded">
+							<div class="course-title">
+								<b>{{ crs.crs_no.substr(0, 9) }} <span class="crs-{{ crs.crs_no.substr(9, 2) }}">{{ crs.crs_no.substr(9, 2) }}</span> - {{ crs.title }}</b>
+								(instructors.length ? ' (<i>' + instructors.join('; ') + '</i>)' : '') + '
+							</div>
+							<div class="course-abstr" ng-if="crs.abstr">{{ crs.abstr }}</div>
+						</div>
+						
+						<div class="course-details" ng-if="crs._expanded">
+							<div class="course-reqs" ng-if="crs.reqs.length"><i>Requirements</i>: <span ng-repeat="req in crs.reqs">[{{ req }}] <span style="font-variant: small-caps" ng-if="!$last">or</span></span></div>
+							<table class="sections">
+								<tr class="section-row" ng-repeat="sec in crs.sections">
+									<td class="section-head">
+										<b>Section {{ sec.sec_no }}</b><!--sup>' + reqs.join(',') + '</sup--><br />
+										<b style="display: block" ng-if="sec.title">{{ sec.title }}</b>
+										<i>instructors.join('<br />')</i>
+									</td>
+									<td>
+										<table class="meetings">
+											<tr ng-repeat="mtg in sec.meetings | filter: +mtg.beg_tm == 0 && (+mtg.end_tm == 0 || +mtg.end_tm == 1200)" title="mtg.instructors.map(function (instr) { return instr.join(' '); }).sort().join('; ')">
+												<td ng-show="mtg.im !== 'XX'">{{ mtg.im | p_im }}:</td>
+												<td>{{ mtg.days | p_days }}</td>
+												<td>
+													{{ mtg.beg_tm | p_time }}&ndash;{{ mtg.end_tm | p_time:true }}{{ mtg.building || mtg.room ? ',' : '' }} {{ mtg.building }} {{ mtg.room }}
+												</td>
+											</tr>
+										</table>
+									</td>
+									<td class="section-dates">{{ sec.beg_date }}<br />{{ sec.end_date }}</td>
+									<td class="section-numbers">
+										<span>enrolled:</span> {{ sec.reg_num }}<br />
+										<span>max:</span> {{ sec.reg_max }}
+									</td>
+									<td class="section-units">{{ (sec.units * (crs.crs_no.substr(9, 2) === 'HM' ? 1 : 3)).toFixed(2) }}</td>
+									<td class="section-check"><input type="checkbox" checked /></td>
+								</tr>
+							</table>
+							<div class="course-footnotes">
+								footnotes.map(function (footnote, i) {
+									return '<sup>' + (i + 1) + '</sup>' + footnote;
+								}).join('<br />')
+							</div>
+						</div>
+					</td>
+				</td>
+			</table>
+		</template>
+<template>
 		<div class="view catalog-browse-view">
 			<h1>Welcome to Scheduler.</h1>
 			<div>
@@ -93,16 +143,18 @@
 				</tr>
 			</table>
 		</div>
-		
+</template>		
 		<script type="text/javascript">
 			var YEAR = 2014;
 			var SESS = 'FA';
 			var DB_PREFIX = 'scheduler_';
 		</script>
 		
-		<script type="text/javascript" src="data.js"></script>
-		<script type="text/javascript" src="scheduler.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.0rc3/angular.min.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.0rc3/angular-route.min.js"></script>
+		<script type="text/javascript" src="app.js"></script>
 		<script type="text/javascript" src="catalog.js"></script>
-		<script type="text/javascript" src="portal.js"></script>
+		<script type="text/javascript" src="data.js"></script>
+		<!--script type="text/javascript" src="scheduler.js"></script-->
 	</body>
 </html>
