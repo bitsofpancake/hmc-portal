@@ -101,7 +101,7 @@ function formatTime(time, ampm) {
 
 function api(query, callback) {
 	var req = new XMLHttpRequest();
-	req.open('GET', 'http://cs.hmc.edu:41783/' + query);
+	req.open('GET', 'http://localhost:41783/' + query);
 	req.onreadystatechange = function () {
 		if (req.readyState != 4)
 			return;
