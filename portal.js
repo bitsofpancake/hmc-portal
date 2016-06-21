@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
+import Categories from './components/Categories.js';
 import CourseList from './components/CourseList.js';
 
 // Can't be https. (Otherwise, we would run into security issues trying to access the API.)
@@ -40,6 +41,8 @@ var router = {
 		return 'catalog-list';
 	}
 };
+
+render(<Categories />, document.querySelector('#categories-container'));
 
 // The main router. Checks the hash and shows the correct view.
 window.onhashchange = function () {

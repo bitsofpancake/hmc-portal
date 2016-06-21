@@ -45,7 +45,7 @@ header ul ul li {
 header span {
 	font-weight: bold;
 }
-header > ul > li {
+#categories > li {
 	margin-bottom: 1em;
 }
 

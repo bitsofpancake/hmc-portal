@@ -169,7 +169,6 @@ var Catalog = new function () {
 	}
 	
 	var categories = {
-	
 		
 		'Arts and Humanities': {
 			'ARCN': 'Art Conservation',
