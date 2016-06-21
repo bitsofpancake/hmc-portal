@@ -1,3 +1,7 @@
+import React from 'react';
+import { render } from 'react-dom';
+import CourseList from './components/CourseList.js';
+
 // Can't be https. (Otherwise, we would run into security issues trying to access the API.)
 if (window.location.protocol === 'https:')
 	window.location.replace('http://www.cs.hmc.edu/~cchu/portal/');
@@ -11,7 +15,9 @@ var router = {
 	'catalog/(\\d{4})/(FA|SU|SP)/([A-Z]{1,5})': function (yr, sess, disc) {
 	/*	document.querySelector('#cat').value = yr + '/' + sess;
 		document.querySelector('#disc').value = disc;*/
-		api(yr + '/' + sess + '?disc=' + disc, Catalog.listCourses);
+		api(yr + '/' + sess + '?disc=' + disc, (data) => {
+			render(<CourseList courses={data} />, document.getElementById('courselist'));
+		});
 		return 'catalog-list';
 	},
 	
@@ -89,11 +95,6 @@ function toSet(arrays) {
 function unique(arr) {
 	return arr.filter(function (x, i, a) { return a.indexOf(x) == i; });
 };
-
-function colorCourseName(name) {
-	var campus = name.substr('MATH131  '.length, 2);
-	return campus ? name.substr(0, 'MATH131  '.length) + '<span class="crs-' + campus + '">' + campus + '</span>' : name;
-}
 
 function formatTime(time, ampm) {
 	return (Math.floor(time / 100) % 12 || 12) + ':' + ('00' + (time % 100)).substr(-2) + (ampm ? (time >= 1200 ? 'pm' : 'am') : '');
