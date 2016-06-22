@@ -4,7 +4,7 @@ import { render } from 'react-dom';
 
 import Categories from './components/Categories.js';
 import CourseList from './components/CourseList.js';
-import Schedule from './components/Schedule.js';
+import Scheduler from './components/Scheduler.js';
 
 // Can't be https. (Otherwise, we would run into security issues trying to access the API.)
 if (window.location.protocol === 'https:')
@@ -24,7 +24,7 @@ function addCourse(course) {
 		course
 	};
 }*/
-var courses = [];
+var courses = {};
 
 // Which page should be shown.
 var router = {
@@ -40,7 +40,7 @@ var router = {
 				<CourseList
 					courses={data}
 					onCourseClick={() => null}
-					onCourseSave={(course) => courses.push(course)}
+					onCourseSave={(course) => courses[course.crs_no] = course}
 				/>, document.getElementById('courselist'));
 		});
 		return 'catalog-list';
@@ -50,7 +50,18 @@ var router = {
 		setTimeout(function () {
 			//Scheduler.load(Scheduler.generate(Data.getCourses(), []));
 			console.log(courses);
-			render(<Schedule courses={courses} />, document.querySelector('#scheduler-container'));
+			const schedule = [];
+			for (let crs_no in courses)
+				schedule.push([crs_no, 0]);
+			
+			render(
+				<Scheduler
+					courses={courses}
+					schedules={[schedule]}
+					currentSchedule={0}
+				/>,
+				document.querySelector('#scheduler-container')
+			);
 		}, 100);
 		return 'schedule';
 	},

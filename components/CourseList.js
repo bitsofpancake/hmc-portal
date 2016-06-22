@@ -128,7 +128,6 @@ function CourseDetails(course) {
 									<span>max:</span> { sec.reg_max }
 								</td>
 								<td className="section-units">{ (sec.units * (course.crs_no.substr('MATH131  '.length, 2) === 'HM' ? 1 : 3)).toFixed(2) }</td>
-								<td className="section-check"><input type="checkbox" checked /></td>
 							</tr>
 						);
 					}) }

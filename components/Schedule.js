@@ -1,35 +1,35 @@
 import React from 'react';
 import { formatTime, timeToDecimal, randomColor } from '../util.js';
 
+// TODO: make these props.
 const beginHour = 8; // Starts at 8am
 const endHour = 21; // End at 9pm
 const scheduleHeight = 6;
 const heightUnit = 'in'; // the units `scheduleHeight` is expressed in.
+
 const hourHeight = scheduleHeight / (endHour - beginHour + 1);
 const timeToPosition = (hr) => (hr - beginHour + 0.5) * hourHeight + heightUnit;
 const timeToHeight = (hr) => hr * hourHeight + heightUnit;
 
-function Schedule({ courses }) {
+function Schedule({ schedule, courses }) {
 	
-	var hours = [];
-	for (var hour = beginHour; hour <= endHour; hour++)
+	const hours = [];
+	for (let hour = beginHour; hour <= endHour; hour++)
 		hours.push(<div className="hour" style={{ top: timeToPosition(hour) }}>{ formatTime(hour * 100, true, false) }</div>);
 	
 	// Add each course
-	var days = [[], [], [], [], []];
-	courses.forEach(function (crs) {
-		var sec = crs.sections[0];
+	const days = 'UMTWRFS'.split('').map(() => []);
+	schedule.forEach(function ([crs, sec]) {
+		const course = courses[crs];
+		const section = courses[crs].sections[sec]; // !!! Select only first section of a class!
 		
 		// Each meeting
-		sec.meetings.forEach(function (mtg) {
+		section.meetings.forEach(function (meeting) {
 		
 			// Each day.
-			mtg.days.split('').forEach(function (d, i) {
-				// Skip days without class and weekends.
-				if (d === '-' || d === 'S' || d === 'U')
-					return;
-				
-				days[i - 1].push(<Meeting crs={crs} sec={sec} mtg={mtg} />);
+			meeting.days.split('').forEach(function (d, i) {
+				if (d !== '-')
+					days[i].push(<Meeting crs={course} sec={section} mtg={meeting} />);
 			});
 		});
 	});
@@ -47,7 +47,7 @@ function Schedule({ courses }) {
 				</tr>
 				<tr>
 					<td style={{ height: scheduleHeight + heightUnit }}>{ hours }</td>
-					{days.map((day) => <td>{ day }</td>)}
+					{ days.slice(1, 6).map((day) => <td>{ day }</td>) }
 				</tr>
 			</tbody>
 		</table>
@@ -67,7 +67,7 @@ function Meeting({ crs, sec, mtg }) {
 				{ formatTime(mtg.beg_tm, false) }&ndash;{ formatTime(mtg.end_tm, true) }
 			</div>
 		</div>
-	);						
+	);
 }
 
 export default Schedule;
