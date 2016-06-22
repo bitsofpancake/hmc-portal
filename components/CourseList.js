@@ -1,4 +1,5 @@
 import React from 'react';
+import { commas, formatTime } from '../util.js';
 
 const imTable = {
 	'CL': 'clinic',
@@ -31,25 +32,17 @@ const catTable = {
 	'N': 'concurrent'
 };
 
-function commas(list, delim=', ') {
-	return list.slice(0, 1).concat(list.slice(1).map((el) => [delim, el]));
-}
-
-function formatTime(time, ampm) {
-	return (Math.floor(time / 100) % 12 || 12) + ':' + ('00' + (time % 100)).substr(-2) + (ampm ? (time >= 1200 ? 'pm' : 'am') : '');
-}
-
-function CourseList({ courses }) {
+function CourseList({ courses, onCourseClick, onCourseSave }) {
 	return (
 		<table>
 			<tbody id="courses">
-				{ courses.map((course, i) => <Course index={ i } course={course} expanded={true} />) }
+				{ courses.map((course) => <Course course={course} expanded={true} onClick={onCourseClick} onSave={onCourseSave} />) }
 			</tbody>
 		</table>
 	);
 };
 
-function Course({ course, expanded, index }) {
+function Course({ course, expanded, onClick, onSave }) {
 	var instructors = new Set();
 	course.sections.forEach(function (sec) {
 		sec.meetings.forEach(function (mtg) {
@@ -63,10 +56,10 @@ function Course({ course, expanded, index }) {
 	var sectionsSaved = []; //Data.sectionsSaved(crs.crs_no);
 	
 	return (
-		<tr data-index={ index } className={ sectionsSaved.length === 0 ? '' : (sectionsSaved.length === course.sections.length ? 'course-saved' : 'courses-partially-saved') }>
-			<td className="course-check" data-action="save"></td>
+		<tr className={ sectionsSaved.length === 0 ? '' : (sectionsSaved.length === course.sections.length ? 'course-saved' : 'courses-partially-saved') }>
+			<td className="course-check" onClick={() => onSave(course)}></td>
 			<td className="course-entry">
-				<div className="course-head" data-action="expand">
+				<div className="course-head" onClick={() => onClick(course)}>
 					<div className="course-title">
 						<b><CourseCode code={ course.crs_no } />: { course.title }</b>
 						{ instructors.size ? <span> (<i>{ Array.from(instructors).join('; ') }</i>)</span> : null }

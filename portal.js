@@ -1,11 +1,30 @@
 import React from 'react';
 import { render } from 'react-dom';
+//import { createStore } from 'redux';
+
 import Categories from './components/Categories.js';
 import CourseList from './components/CourseList.js';
+import Schedule from './components/Schedule.js';
 
 // Can't be https. (Otherwise, we would run into security issues trying to access the API.)
 if (window.location.protocol === 'https:')
 	window.location.replace('http://www.cs.hmc.edu/~cchu/portal/');
+/*
+var store = createStore(function (state = { courses: [], schedules: [] }, action) {
+	if (action.type === 'TOGGLE_COURSE') {
+		if (!state.courses.contains(course))
+			state.courses.push()
+		
+	}
+});
+
+function addCourse(course) {
+	return {
+		type: 'TOGGLE_COURSE',
+		course
+	};
+}*/
+var courses = [];
 
 // Which page should be shown.
 var router = {
@@ -17,14 +36,21 @@ var router = {
 	/*	document.querySelector('#cat').value = yr + '/' + sess;
 		document.querySelector('#disc').value = disc;*/
 		api(yr + '/' + sess + '?disc=' + disc, (data) => {
-			render(<CourseList courses={data} />, document.getElementById('courselist'));
+			render(
+				<CourseList
+					courses={data}
+					onCourseClick={() => null}
+					onCourseSave={(course) => courses.push(course)}
+				/>, document.getElementById('courselist'));
 		});
 		return 'catalog-list';
 	},
 	
 	'schedules': function () {
 		setTimeout(function () {
-			Scheduler.load(Scheduler.generate(Data.getCourses(), []));
+			//Scheduler.load(Scheduler.generate(Data.getCourses(), []));
+			console.log(courses);
+			render(<Schedule courses={courses} />, document.querySelector('#scheduler-container'));
 		}, 100);
 		return 'schedule';
 	},
@@ -72,36 +98,6 @@ window.onhashchange = function () {
 
 // Route the current hash value.
 window.onhashchange();
-
-
-function toSet(arrays) {
-	var s = [];
-	
-	// Insertion sort.
-	for (var i = 0; i < arrays.length; i++)
-		for (var j = 0; j < arrays[i].length; j++) {
-			for (var k = 0; k < s.length; k++) {
-				if (s[k] === arrays[i][j])
-					break;
-				if (s[k] > arrays[i][j]) {
-					s.splice(k, 0, arrays[i][j]);
-					break;
-				}
-			}
-			if (k == s.length)
-				s.push(arrays[i][j]);
-		}
-	
-	return s;
-}
-
-function unique(arr) {
-	return arr.filter(function (x, i, a) { return a.indexOf(x) == i; });
-};
-
-function formatTime(time, ampm) {
-	return (Math.floor(time / 100) % 12 || 12) + ':' + ('00' + (time % 100)).substr(-2) + (ampm ? (time >= 1200 ? 'pm' : 'am') : '');
-}
 
 function api(query, callback) {
 	var req = new XMLHttpRequest();

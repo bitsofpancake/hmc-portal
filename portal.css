@@ -113,14 +113,12 @@ body > .schedule-view {
 	border: 1px solid #ccc;
 	background-color: white;
 }
-#schedule ol {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+#schedule .hour {
+	position: absolute;
+	left: 0;
+	right: 0;
 	text-align: center;
-}
-#schedule li {
-	padding: 1.8em 0.25em;
+	margin-top: -0.5em;
 }
 #schedule th {
 	padding: 0.25em;
@@ -132,17 +130,22 @@ body > .schedule-view {
 #schedule td {
 	vertical-align: top;
 	overflow: hidden;
-}
-#schedule .day {
 	position: relative;
-	text-align: center;
-	font-size: 0.8em;
 }
-#schedule .day div {
+#schedule .meeting {
 	position: absolute;
 	left: 0;
 	right: 0;
+	
+	display: flex;
+	align-items: center;
+	text-align: center;
+	font-size: 0.8em;
 }
+#schedule .meeting > div {
+	width: 100%;
+}
+
 
 @media print {
 	body.schedule-view {

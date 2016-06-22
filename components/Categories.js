@@ -134,8 +134,7 @@ function Category({ cat, disciplines }) {
 }
 
 function Discipline({ disc, description }) {
-	return <li><a href={'#catalog/2014/FA/' + disc}>{ disc }: { description }</a></li>;
+	return <li><a href={'#catalog/' + YEAR + '/' + SESS + '/' + disc}>{ disc }: { description }</a></li>;
 }
-
 
 export default Categories;
