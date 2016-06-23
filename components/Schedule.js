@@ -21,7 +21,7 @@ function Schedule({ schedule, courses }) {
 	const days = 'UMTWRFS'.split('').map(() => []);
 	schedule.forEach(function ([crs, sec]) {
 		const course = courses[crs];
-		const section = courses[crs].sections[sec]; // !!! Select only first section of a class!
+		const section = courses[crs].sections[sec];
 		
 		// Each meeting
 		section.meetings.forEach(function (meeting) {

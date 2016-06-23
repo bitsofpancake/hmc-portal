@@ -1,13 +1,14 @@
 import React from 'react';
-import { formatTime, timeToDecimal, randomColor } from '../util.js';
 import Schedule from './Schedule.js';
-
 
 function Scheduler({ courses, schedules, currentSchedule=0, onNext, onPrevious }) {
 	if (!schedules[currentSchedule])
 		throw new Error('Schedule does not exist.');
 	
-	const createCallback = (fn) => (e) => { e.preventDefault(); fn({ courses, schedules, currentSchedule }); };
+	const createCallback = (fn) => (e) => {
+		e.preventDefault(); 
+		fn({ courses, schedules, currentSchedule });
+	};
 	return (
 		<div>
 			<div id="controls" className="generated">

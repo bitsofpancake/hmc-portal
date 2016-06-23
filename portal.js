@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
-//import { createStore } from 'redux';
+import { createStore } from 'redux';
+import { connect, Provider } from 'react-redux';
 
 import Categories from './components/Categories.js';
 import CourseList from './components/CourseList.js';
@@ -9,22 +10,42 @@ import Scheduler from './components/Scheduler.js';
 // Can't be https. (Otherwise, we would run into security issues trying to access the API.)
 if (window.location.protocol === 'https:')
 	window.location.replace('http://www.cs.hmc.edu/~cchu/portal/');
-/*
-var store = createStore(function (state = { courses: [], schedules: [] }, action) {
-	if (action.type === 'TOGGLE_COURSE') {
-		if (!state.courses.contains(course))
-			state.courses.push()
-		
+
+const store = createStore(function (state = { courses: {} }, action) {
+	if (action.type === 'SAVE_COURSE') {
+		const newCourses = Object.assign({}, state.courses);
+		newCourses[action.course.crs_no] = action.course;
+		return Object.assign({}, state, { courses: newCourses });
 	}
+	
+	return state;
+	//if (action)
+	//	throw new Error('Action not found: ' + action.type);
 });
 
-function addCourse(course) {
-	return {
-		type: 'TOGGLE_COURSE',
-		course
-	};
-}*/
-var courses = {};
+const ActiveScheduler = connect(
+	function (state) {
+		const schedule = [];
+		for (let crs_no in state.courses)
+			schedule.push([crs_no, 0]);
+			
+		return {
+			courses: state.courses,
+			schedules: [schedule],
+			currentSchedule: 0
+		}
+	},
+	function (dispatch) {
+		return {
+			onNext: () => {
+				
+			},
+			onPrevious: () => {
+				
+			}
+		};
+	}
+)(Scheduler);
 
 // Which page should be shown.
 var router = {
@@ -40,7 +61,10 @@ var router = {
 				<CourseList
 					courses={data}
 					onCourseClick={() => null}
-					onCourseSave={(course) => courses[course.crs_no] = course}
+					onCourseSave={(course) => store.dispatch({
+						type: 'SAVE_COURSE',
+						course
+					})}
 				/>, document.getElementById('courselist'));
 		});
 		return 'catalog-list';
@@ -48,18 +72,10 @@ var router = {
 	
 	'schedules': function () {
 		setTimeout(function () {
-			//Scheduler.load(Scheduler.generate(Data.getCourses(), []));
-			console.log(courses);
-			const schedule = [];
-			for (let crs_no in courses)
-				schedule.push([crs_no, 0]);
-			
 			render(
-				<Scheduler
-					courses={courses}
-					schedules={[schedule]}
-					currentSchedule={0}
-				/>,
+				<Provider store={store}>
+					<ActiveScheduler />
+				</Provider>,
 				document.querySelector('#scheduler-container')
 			);
 		}, 100);
