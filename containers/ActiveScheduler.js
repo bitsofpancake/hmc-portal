@@ -66,12 +66,18 @@ const ActiveScheduler = connect(
 	state => ({
 		courses: state.scheduler.courses,
 		schedules: getSchedules(state),
-		currentSchedule: state.scheduler.currentSchedule,
+		scheduleIndex: state.scheduler.scheduleIndex,
 		selectedCourses: state.scheduler.selectedCourses
 	}),
 	dispatch => ({
-		onNext: () => dispatch({ type: 'VIEW_NEXT_SCHEDULE' }),
-		onPrevious: () => dispatch({ type: 'VIEW_PREVIOUS_SCHEDULE' })
+		onNext: ({ schedules, scheduleIndex }) => dispatch({
+			type: 'VIEW_SCHEDULE',
+			scheduleIndex: (scheduleIndex + 1) % schedules.length
+		}),
+		onPrevious: ({ schedules, scheduleIndex }) => dispatch({
+			type: 'VIEW_SCHEDULE',
+			scheduleIndex: (scheduleIndex - 1 + schedules.length) % schedules.length
+		})
 	})
 )(Scheduler);
 

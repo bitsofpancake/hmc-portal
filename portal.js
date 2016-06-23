@@ -38,7 +38,7 @@ const store = createStore(function (state, action) {
 			scheduler: {
 				courses: {}, // a dictionary of saved courses
 				selectedCourses: [], // a list of selected courses
-				currentSchedule: 0 // index of current schedule
+				scheduleIndex: 0 // index of current schedule
 			}
 		};
 	}
@@ -46,17 +46,16 @@ const store = createStore(function (state, action) {
 	if (action.type === 'SAVE_COURSE') {
 		state = update(state, ['scheduler', 'courses', action.course.crs_no], _ => action.course);
 		state = update(state, ['scheduler', 'selectedCourses'], selectedCourses => [...selectedCourses, action.course.crs_no]);
+		state = update(state, ['scheduler', 'scheduleIndex'], _ => 0);
 		return state;
 	}
 	
-	if (action.type === 'VIEW_NEXT_SCHEDULE')
-		return update(state, ['scheduler', 'currentSchedule'], currentSchedule => currentSchedule + 1);
-	if (action.type === 'VIEW_PREVIOUS_SCHEDULE')
-		return update(state, ['scheduler', 'currentSchedule'], currentSchedule => currentSchedule - 1);
+	if (action.type === 'VIEW_SCHEDULE')
+		return update(state, ['scheduler', 'scheduleIndex'], _ => action.scheduleIndex);
 	
 	console.warn('Action not found: ' + action.type);
 	return state;
-});
+}, null, window.devToolsExtension && window.devToolsExtension());
 
 // Which page should be shown.
 var router = {

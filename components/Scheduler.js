@@ -1,19 +1,19 @@
 import React from 'react';
 import Schedule from './Schedule.js';
 
-function Scheduler({ courses, schedules, currentSchedule=0, onNext, onPrevious }) {
-	if (!schedules[currentSchedule])
+function Scheduler({ courses, schedules, scheduleIndex=0, onNext, onPrevious }) {
+	if (!schedules[scheduleIndex])
 		return <div>Schedule does not exist.</div>;
 	
 	const createCallback = (fn) => (e) => {
 		e.preventDefault(); 
-		fn({ courses, schedules, currentSchedule });
+		fn({ courses, schedules, scheduleIndex });
 	};
 	return (
 		<div>
 			<div id="controls" className="generated">
 				<div id="title">
-					<span className="show-generated">Schedule <b id="page-number">{ currentSchedule + 1 }</b> of <b id="page-count">{ schedules.length }</b></span>
+					<span className="show-generated">Schedule <b id="page-number">{ scheduleIndex + 1 }</b> of <b id="page-count">{ schedules.length }</b></span>
 					<span className="show-saved">Schedule <b id="page-number">1</b> of <b id="page-count">1</b></span>
 				</div>
 				
@@ -25,19 +25,11 @@ function Scheduler({ courses, schedules, currentSchedule=0, onNext, onPrevious }
 				</ul>
 				
 				<ul id="pages">
-					{
-						currentSchedule + 1 < schedules.length 
-							? <li><a id="page-right" href="#" onClick={createCallback(onNext)}>next</a></li>
-							: <li className="disabled">next</li>
-					}
-					{
-						currentSchedule - 1 >= 0
-							? <li><a id="page-left" href="#" onClick={createCallback(onPrevious)}>previous</a></li>
-							: <li className="disabled">previous</li>
-					}
+					<li><a id="page-right" href="#" onClick={createCallback(onNext)}>next</a></li>
+					<li><a id="page-left" href="#" onClick={createCallback(onPrevious)}>previous</a></li>
 				</ul>
 			</div>
-			<Schedule courses={courses} schedule={schedules[currentSchedule]} />
+			<Schedule courses={courses} schedule={schedules[scheduleIndex]} />
 		</div>
 	);
 }
