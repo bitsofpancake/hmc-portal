@@ -3,7 +3,7 @@ import Schedule from './Schedule.js';
 
 function Scheduler({ courses, schedules, currentSchedule=0, onNext, onPrevious }) {
 	if (!schedules[currentSchedule])
-		throw new Error('Schedule does not exist.');
+		return <div>Schedule does not exist.</div>;
 	
 	const createCallback = (fn) => (e) => {
 		e.preventDefault(); 

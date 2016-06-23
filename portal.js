@@ -5,47 +5,37 @@ import { connect, Provider } from 'react-redux';
 
 import Categories from './components/Categories.js';
 import CourseList from './components/CourseList.js';
-import Scheduler from './components/Scheduler.js';
+import ActiveScheduler from './containers/ActiveScheduler.js';
 
 // Can't be https. (Otherwise, we would run into security issues trying to access the API.)
 if (window.location.protocol === 'https:')
 	window.location.replace('http://www.cs.hmc.edu/~cchu/portal/');
 
-const store = createStore(function (state = { courses: {} }, action) {
+const store = createStore(function (state, action) {
+	if (!state) {
+		return {
+			courses: {},
+			selectedCourses: [],
+			currentSchedule: 0
+		};
+	}
+
 	if (action.type === 'SAVE_COURSE') {
 		const newCourses = Object.assign({}, state.courses);
 		newCourses[action.course.crs_no] = action.course;
-		return Object.assign({}, state, { courses: newCourses });
+		return Object.assign({}, state, { courses: newCourses, selectedCourses: state.selectedCourses.concat([action.course.crs_no]) });
 	}
 	
-	return state;
-	//if (action)
-	//	throw new Error('Action not found: ' + action.type);
-});
-
-const ActiveScheduler = connect(
-	function (state) {
-		const schedule = [];
-		for (let crs_no in state.courses)
-			schedule.push([crs_no, 0]);
-			
-		return {
-			courses: state.courses,
-			schedules: [schedule],
-			currentSchedule: 0
-		}
-	},
-	function (dispatch) {
-		return {
-			onNext: () => {
-				
-			},
-			onPrevious: () => {
-				
-			}
-		};
+	if (action.type === 'VIEW_NEXT_SCHEDULE') {
+		return Object.assign({}, state, { currentSchedule: state.currentSchedule + 1 });
 	}
-)(Scheduler);
+	if (action.type === 'VIEW_PREVIOUS_SCHEDULE') {
+		return Object.assign({}, state, { currentSchedule: state.currentSchedule - 1 });
+	}
+	
+	
+	throw new Error('Action not found: ' + action.type);
+});
 
 // Which page should be shown.
 var router = {
