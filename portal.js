@@ -3,18 +3,18 @@ import { render } from 'react-dom';
 import { createStore } from 'redux';
 import { connect, Provider } from 'react-redux';
 
-import Categories from './components/Categories.js';
-import CourseList from './components/CourseList.js';
-import ActiveScheduler from './containers/ActiveScheduler.js';
+import App from './containers/App.js';
 
 // Can't be https. (Otherwise, we would run into security issues trying to access the API.)
 if (window.location.protocol === 'https:')
 	window.location.replace('http://www.cs.hmc.edu/~cchu/portal/');
 
-// update({ a: { b: c }}, ['a', 'b'], fn) == { a: { b: fn(c) }}
+// update({ a: { b: c }}, ['a', 'b'], fn) == { a: { b: (typeof fn === 'function' ? fn(c) : fn) }}
 function update(obj, keys, fn) {
+	if (typeof keys === 'string')
+		keys = keys.split('.');
 	if (!keys.length)
-		return fn(obj);
+		return typeof fn === 'function' ? fn(obj) : fn;
 	
 	//return { ...obj, [keys[0]]: update(obj[keys[0]], keys.slice(1), fn) };
 	const newObj = Object.assign({}, obj);
@@ -25,12 +25,12 @@ function update(obj, keys, fn) {
 const store = createStore(function (state, action) {
 	if (!state) {
 		return {
-			view: '', // the current view; one of [home, catalog, scheduler]
+			view: 'home', // the current view; one of [home, catalog, scheduler]
 			loading: false,
 		
 			// The catalog view.
 			catalog: {
-				courses: {}, // courses to display
+				courses: null, // courses to display
 				currentlyExpanded: null // currently expanded
 			},
 		
@@ -43,55 +43,80 @@ const store = createStore(function (state, action) {
 		};
 	}
 
-	if (action.type === 'SAVE_COURSE') {
-		state = update(state, ['scheduler', 'courses', action.course.crs_no], _ => action.course);
-		state = update(state, ['scheduler', 'selectedCourses'], selectedCourses => [...selectedCourses, action.course.crs_no]);
-		state = update(state, ['scheduler', 'scheduleIndex'], _ => 0);
-		return state;
+	switch (action.type) {
+		case 'CHANGE_VIEW':
+			state = update(state, 'catalog.courses', null);
+			state = update(state, 'view', action.view);
+			return state;
+	
+		case 'LOAD_COURSES':
+			state = update(state, 'catalog.courses', action.courses);
+			return state;
+		
+		case 'SAVE_COURSE':
+			state = update(state, 'scheduler.courses.' + action.course.crs_no, action.course);
+			state = update(state, 'scheduler.selectedCourses', selectedCourses => [...selectedCourses, action.course.crs_no]);
+			state = update(state, 'scheduler.scheduleIndex', 0);
+			return state;
+	
+		case 'SHOW_SCHEDULE':
+			return update(state, 'scheduler.scheduleIndex', action.scheduleIndex);
+		
+		default:
+			console.warn('Action not found: ' + action.type);
+			return state;
 	}
 	
-	if (action.type === 'VIEW_SCHEDULE')
-		return update(state, ['scheduler', 'scheduleIndex'], _ => action.scheduleIndex);
-	
-	console.warn('Action not found: ' + action.type);
-	return state;
 }, null, window.devToolsExtension && window.devToolsExtension());
+
+
+
+render(
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	document.getElementById('mount')
+);
 
 // Which page should be shown.
 var router = {
 	'catalog': function () {
-		return 'catalog-browse';
+		store.dispatch({
+			type: 'CHANGE_VIEW',
+			view: 'home'
+		});
 	},
 
 	'catalog/(\\d{4})/(FA|SU|SP)/([A-Z]{1,5})': function (yr, sess, disc) {
-	/*	document.querySelector('#cat').value = yr + '/' + sess;
-		document.querySelector('#disc').value = disc;*/
-		api(yr + '/' + sess + '?disc=' + disc, (data) => {
-			render(
-				<CourseList
-					courses={data}
-					onCourseClick={() => null}
-					onCourseSave={course => store.dispatch({
-						type: 'SAVE_COURSE',
-						course
-					})}
-				/>, document.getElementById('courselist'));
+		store.dispatch({
+			type: 'CHANGE_VIEW',
+			view: 'catalog'
 		});
-		return 'catalog-list';
+		store.dispatch({
+			type: 'START_LOADING'
+		});
+
+		api(
+			yr + '/' + sess + '?disc=' + disc,
+			courses => {
+				store.dispatch({
+					type: 'LOAD_COURSES',
+					courses
+				});
+				store.dispatch({
+					type: 'FINISH_LOADING'
+				});
+			}
+		);
 	},
 	
 	'schedules': function () {
-		setTimeout(function () {
-			render(
-				<Provider store={store}>
-					<ActiveScheduler />
-				</Provider>,
-				document.querySelector('#scheduler-container')
-			);
-		}, 100);
-		return 'schedule';
+		store.dispatch({
+			type: 'CHANGE_VIEW',
+			view: 'scheduler'
+		});
 	},
-	
+	/*
 	'schedules/([A-Za-z0-9=-]+)': function (schedule) {
 		setTimeout(function () {
 			Scheduler.draw(JSON.parse(atob(schedule)));
@@ -102,28 +127,27 @@ var router = {
 	'catalog/saved': function () {
 		Catalog.listCourses(Data.getCourses());
 		return 'catalog-list';
-	}
+	}*/
 };
-
-render(<Categories />, document.querySelector('#categories-container'));
 
 // The main router. Checks the hash and shows the correct view.
 window.onhashchange = function () {
 	
 	// Try each pattern until one matches.
-	var viewName = false;
+	var found = false;
 	for (var pattern in router) {
 		window.location.hash.replace(new RegExp('^#' + pattern + '$'), function () {
-			viewName = router[pattern].apply(window, Array.prototype.slice.call(arguments, 1));
+			router[pattern].apply(window, Array.prototype.slice.call(arguments, 1));
+			found = true;
 		})
 		
 		// If viewName is "X-Y-Z", this sets <body>'s class to "X-view X-Y-view X-Y-Z-view".
-		if (viewName) {
-			var classes = [];
+		if (found) {
+			/*var classes = [];
 			var parts = viewName.split('-');
 			while (parts.length)
 				classes.push((classes.length ? classes[classes.length - 1] + '-' : '') + parts.shift());
-			document.body.className = classes.map(function (cls) { return cls + '-view'; }).join(' ');
+			document.body.className = classes.map(function (cls) { return cls + '-view'; }).join(' ');*/
 			return;
 		}
 	}

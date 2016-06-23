@@ -115,7 +115,7 @@ const categories = {
 
 function Categories() {
 	return (
-		<ul id="categories" className="view catalog-view">
+		<ul id="categories">
 			<li><a href="#catalog/saved">Saved Courses</a></li>
 			{ Object.keys(categories).map((cat) => <Category cat={cat} disciplines={categories[cat]} />) }
 		</ul>

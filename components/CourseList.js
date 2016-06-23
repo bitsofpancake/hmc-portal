@@ -33,6 +33,9 @@ const catTable = {
 };
 
 function CourseList({ courses, onCourseClick, onCourseSave }) {
+	if (!courses)
+		return null;
+		
 	return (
 		<table>
 			<tbody id="courses">

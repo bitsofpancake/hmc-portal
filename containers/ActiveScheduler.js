@@ -71,11 +71,11 @@ const ActiveScheduler = connect(
 	}),
 	dispatch => ({
 		onNext: ({ schedules, scheduleIndex }) => dispatch({
-			type: 'VIEW_SCHEDULE',
+			type: 'SHOW_SCHEDULE',
 			scheduleIndex: (scheduleIndex + 1) % schedules.length
 		}),
 		onPrevious: ({ schedules, scheduleIndex }) => dispatch({
-			type: 'VIEW_SCHEDULE',
+			type: 'SHOW_SCHEDULE',
 			scheduleIndex: (scheduleIndex - 1 + schedules.length) % schedules.length
 		})
 	})
