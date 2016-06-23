@@ -26,7 +26,7 @@ function sectionsConflict(sec1, sec2) {
 	return false;
 }
 
-// Given a list of course/section pairs, is this schedule viable?
+// Given a list of course/section pairs, is this schedule impossible?
 function scheduleConflicts(schedule, courses) {
 	for (var i = 0; i < schedule.length; i++)
 		for (var j = 0; j < i; j++)
@@ -37,11 +37,9 @@ function scheduleConflicts(schedule, courses) {
 }
 
 // Use reselect library for easy memoization of the course combinations
-const selectCourses = state => state.courses;
-const selectSelectedCourses = state => state.selectedCourses;
-const selectSchedules = createSelector(
-	selectCourses,
-	selectSelectedCourses,
+const getSchedules = createSelector(
+	state => state.scheduler.courses,
+	state => state.scheduler.selectedCourses,
 	(courses, selectedCourses) => {
 		
 		// Generate possible schedules by growing possible schedules, adding courses one at a time.
@@ -64,62 +62,17 @@ const selectSchedules = createSelector(
 	}
 );
 
-/*
-		// Generate possible schedules.
-		var schedules = [[]];
-		for (var i = 0; i < courses.length; i++) {
-			var newSchedules = [];
-			for (var j = 0; j < schedules.length; j++)
-				for (var k = 0; k < courses[i].sections.length; k++) {
-					var possibleSchedule = schedules[j].concat([[courses[i], k]]);
-					if (!scheduleConflicts(possibleSchedule))
-						newSchedules.push(possibleSchedule);
-				}
-				
-			schedules = newSchedules;
-			if (schedules.length == 0)
-				return { 'length': 0, 'conflicting': courses[i] };
-		}
-		
-		// Add on the optional classes.
-		// If schedules = [[A], [B]] and optional = [C, D], then make 
-		// schedules = [[A], [B], [AC], [BC], [AD], [BD], [ACD], [BCD]].
-		for (var i = 0; i < optional.length; i++) {
-			var newSchedules = [];
-			for (var j = 0; j < schedules.length; j++)
-				for (var k = 0; k < optional[i].sections.length; k++) {
-					var possibleSchedule = schedules[j].concat([[optional[i], k]]);
-					if (!scheduleConflicts(possibleSchedule)) {
-						schedules[j].redundant = true;
-						newSchedules.push(possibleSchedule);
-					}
-				}
-			schedules = schedules.concat(newSchedules);
-		}
-		
-		// Filter out redundant schedules -- if [AC] is possible, no need to have just [A].
-		return schedules.filter(function (schedule) { return !schedule.redundant; });
-	}
-*/
-
 const ActiveScheduler = connect(
-	function (state) {
-		return {
-			courses: state.courses,
-			schedules: selectSchedules(state),
-			currentSchedule: state.currentSchedule
-		}
-	},
-	function (dispatch) {
-		return {
-			onNext: () => {
-				dispatch({ type: 'VIEW_NEXT_SCHEDULE' });
-			},
-			onPrevious: () => {
-				dispatch({ type: 'VIEW_PREVIOUS_SCHEDULE' });
-			}
-		};
-	}
+	state => ({
+		courses: state.scheduler.courses,
+		schedules: getSchedules(state),
+		currentSchedule: state.scheduler.currentSchedule,
+		selectedCourses: state.scheduler.selectedCourses
+	}),
+	dispatch => ({
+		onNext: () => dispatch({ type: 'VIEW_NEXT_SCHEDULE' }),
+		onPrevious: () => dispatch({ type: 'VIEW_PREVIOUS_SCHEDULE' })
+	})
 )(Scheduler);
 
 export default ActiveScheduler;

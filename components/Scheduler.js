@@ -25,8 +25,16 @@ function Scheduler({ courses, schedules, currentSchedule=0, onNext, onPrevious }
 				</ul>
 				
 				<ul id="pages">
-					<li><a id="page-right" href="#" onClick={createCallback(onNext)}>next</a></li>
-					<li><a id="page-left" href="#" onClick={createCallback(onPrevious)}>previous</a></li>
+					{
+						currentSchedule + 1 < schedules.length 
+							? <li><a id="page-right" href="#" onClick={createCallback(onNext)}>next</a></li>
+							: <li className="disabled">next</li>
+					}
+					{
+						currentSchedule - 1 >= 0
+							? <li><a id="page-left" href="#" onClick={createCallback(onPrevious)}>previous</a></li>
+							: <li className="disabled">previous</li>
+					}
 				</ul>
 			</div>
 			<Schedule courses={courses} schedule={schedules[currentSchedule]} />

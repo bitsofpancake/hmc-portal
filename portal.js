@@ -11,30 +11,51 @@ import ActiveScheduler from './containers/ActiveScheduler.js';
 if (window.location.protocol === 'https:')
 	window.location.replace('http://www.cs.hmc.edu/~cchu/portal/');
 
+// update({ a: { b: c }}, ['a', 'b'], fn) == { a: { b: fn(c) }}
+function update(obj, keys, fn) {
+	if (!keys.length)
+		return fn(obj);
+	
+	//return { ...obj, [keys[0]]: update(obj[keys[0]], keys.slice(1), fn) };
+	const newObj = Object.assign({}, obj);
+	newObj[keys[0]] = update(obj[keys[0]], keys.slice(1), fn);
+	return newObj;
+}
+
 const store = createStore(function (state, action) {
 	if (!state) {
 		return {
-			courses: {},
-			selectedCourses: [],
-			currentSchedule: 0
+			view: '', // the current view; one of [home, catalog, scheduler]
+			loading: false,
+		
+			// The catalog view.
+			catalog: {
+				courses: {}, // courses to display
+				currentlyExpanded: null // currently expanded
+			},
+		
+			// The scheduler view.
+			scheduler: {
+				courses: {}, // a dictionary of saved courses
+				selectedCourses: [], // a list of selected courses
+				currentSchedule: 0 // index of current schedule
+			}
 		};
 	}
 
 	if (action.type === 'SAVE_COURSE') {
-		const newCourses = Object.assign({}, state.courses);
-		newCourses[action.course.crs_no] = action.course;
-		return Object.assign({}, state, { courses: newCourses, selectedCourses: state.selectedCourses.concat([action.course.crs_no]) });
+		state = update(state, ['scheduler', 'courses', action.course.crs_no], _ => action.course);
+		state = update(state, ['scheduler', 'selectedCourses'], selectedCourses => [...selectedCourses, action.course.crs_no]);
+		return state;
 	}
 	
-	if (action.type === 'VIEW_NEXT_SCHEDULE') {
-		return Object.assign({}, state, { currentSchedule: state.currentSchedule + 1 });
-	}
-	if (action.type === 'VIEW_PREVIOUS_SCHEDULE') {
-		return Object.assign({}, state, { currentSchedule: state.currentSchedule - 1 });
-	}
+	if (action.type === 'VIEW_NEXT_SCHEDULE')
+		return update(state, ['scheduler', 'currentSchedule'], currentSchedule => currentSchedule + 1);
+	if (action.type === 'VIEW_PREVIOUS_SCHEDULE')
+		return update(state, ['scheduler', 'currentSchedule'], currentSchedule => currentSchedule - 1);
 	
-	
-	throw new Error('Action not found: ' + action.type);
+	console.warn('Action not found: ' + action.type);
+	return state;
 });
 
 // Which page should be shown.
@@ -51,7 +72,7 @@ var router = {
 				<CourseList
 					courses={data}
 					onCourseClick={() => null}
-					onCourseSave={(course) => store.dispatch({
+					onCourseSave={course => store.dispatch({
 						type: 'SAVE_COURSE',
 						course
 					})}

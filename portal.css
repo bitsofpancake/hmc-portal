@@ -21,12 +21,9 @@ a:link, a:visited, a:hover {
 a:hover {
 	text-decoration: underline;
 }
-a.disabled {
+.disabled {
 	color: #ccc;
 	cursor: default;
-}
-a.disabled:hover {
-	text-decoration: none;
 }
 
 ul {
