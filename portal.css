@@ -96,10 +96,6 @@ body.courses-view .courses-link
 }
 
 /* Schedule */
-body > .schedule-view {
-	width: 8in;
-	font-size: 0.8em;
-}
 #schedule {
 	font-size: 10pt;
 	width: 8in;

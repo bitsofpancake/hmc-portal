@@ -16,6 +16,12 @@ function update(obj, keys, fn) {
 	if (!keys.length)
 		return typeof fn === 'function' ? fn(obj) : fn;
 	
+	if (keys.length === 1 && fn === null) {
+		const newObj = Object.assign({}, obj);
+		delete newObj[keys[0]];
+		return newObj;
+	}
+	
 	//return { ...obj, [keys[0]]: update(obj[keys[0]], keys.slice(1), fn) };
 	const newObj = Object.assign({}, obj);
 	newObj[keys[0]] = update(obj[keys[0]], keys.slice(1), fn);
@@ -26,7 +32,7 @@ const store = createStore(function (state, action) {
 	if (!state) {
 		return {
 			view: 'home', // the current view; one of [home, catalog, scheduler]
-			loading: false,
+			loading: 0,
 		
 			// The catalog view.
 			catalog: {
@@ -48,19 +54,34 @@ const store = createStore(function (state, action) {
 			state = update(state, 'catalog.courses', null);
 			state = update(state, 'view', action.view);
 			return state;
-	
+			
+		case 'START_LOADING':
+			return update(state, 'loading', loading => loading + 1);
+		case 'FINISH_LOADING':
+			return update(state, 'loading', loading => loading - 1);
+		
 		case 'LOAD_COURSES':
 			state = update(state, 'catalog.courses', action.courses);
 			return state;
 		
 		case 'SAVE_COURSE':
 			state = update(state, 'scheduler.courses.' + action.course.crs_no, action.course);
-			state = update(state, 'scheduler.selectedCourses', selectedCourses => [...selectedCourses, action.course.crs_no]);
-			state = update(state, 'scheduler.scheduleIndex', 0);
+			return state;
+		case 'UNSAVE_COURSE':
+			state = update(state, 'scheduler.courses.' + action.course.crs_no, null);
 			return state;
 	
 		case 'SHOW_SCHEDULE':
 			return update(state, 'scheduler.scheduleIndex', action.scheduleIndex);
+		
+		case 'SELECT_COURSE':
+			state = update(state, 'scheduler.selectedCourses', selectedCourses => [...selectedCourses, action.course.crs_no]);
+			state = update(state, 'scheduler.scheduleIndex', 0);
+			return state;
+		case 'UNSELECT_COURSE':
+			state = update(state, 'scheduler.selectedCourses', selectedCourses => selectedCourses.filter(crs_no => crs_no !== action.course.crs_no));
+			state = update(state, 'scheduler.scheduleIndex', 0);
+			return state;
 		
 		default:
 			console.warn('Action not found: ' + action.type);
@@ -141,15 +162,8 @@ window.onhashchange = function () {
 			found = true;
 		})
 		
-		// If viewName is "X-Y-Z", this sets <body>'s class to "X-view X-Y-view X-Y-Z-view".
-		if (found) {
-			/*var classes = [];
-			var parts = viewName.split('-');
-			while (parts.length)
-				classes.push((classes.length ? classes[classes.length - 1] + '-' : '') + parts.shift());
-			document.body.className = classes.map(function (cls) { return cls + '-view'; }).join(' ');*/
+		if (found)
 			return;
-		}
 	}
 	
 	// No match.

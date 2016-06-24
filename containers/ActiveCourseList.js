@@ -6,14 +6,31 @@ import { createSelector } from 'reselect';
 
 const ActiveCourseList = connect(
 	state => ({
-		courses: state.catalog.courses
+		courses: state.catalog.courses,
+		checkedCourses: Object.keys(state.scheduler.courses)
 	}),
 	dispatch => ({
 		onCourseClick: () => null,
-		onCourseSave: course => dispatch({
-			type: 'SAVE_COURSE',
-			course
-		})
+		onCourseCheck: course => {
+			dispatch({
+				type: 'SAVE_COURSE',
+				course
+			});
+			dispatch({
+				type: 'SELECT_COURSE',
+				course
+			});
+		},
+		onCourseUncheck: course => {
+			dispatch({
+				type: 'UNSELECT_COURSE',
+				course
+			});
+			dispatch({
+				type: 'UNSAVE_COURSE',
+				course
+			});
+		},
 	})
 )(CourseList);
 

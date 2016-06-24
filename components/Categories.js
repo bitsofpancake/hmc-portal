@@ -116,7 +116,6 @@ const categories = {
 function Categories() {
 	return (
 		<ul id="categories">
-			<li><a href="#catalog/saved">Saved Courses</a></li>
 			{ Object.keys(categories).map((cat) => <Category cat={cat} disciplines={categories[cat]} />) }
 		</ul>
 	);
@@ -134,7 +133,7 @@ function Category({ cat, disciplines }) {
 }
 
 function Discipline({ disc, description }) {
-	return <li><a href={'#catalog/' + YEAR + '/' + SESS + '/' + disc}>{ disc }: { description }</a></li>;
+	return <li><a href={'#catalog/' + YEAR + '/' + SESS + '/' + disc} title={description}>{ disc }: { description }</a></li>;
 }
 
 export default Categories;

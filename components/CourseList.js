@@ -32,20 +32,29 @@ const catTable = {
 	'N': 'concurrent'
 };
 
-function CourseList({ courses, onCourseClick, onCourseSave }) {
+function CourseList({ courses, checkedCourses, onCourseClick, onCourseCheck, onCourseUncheck }) {
 	if (!courses)
 		return null;
 		
 	return (
 		<table>
 			<tbody id="courses">
-				{ courses.map((course) => <Course course={course} expanded={true} onClick={onCourseClick} onSave={onCourseSave} />) }
+				{ courses.map((course) => (
+					<Course
+						course={course}
+						checked={checkedCourses.includes(course.crs_no)}
+						expanded={true}
+						onClick={onCourseClick}
+						onCheck={onCourseCheck} 
+						onUncheck={onCourseUncheck} 
+					/>
+				))}
 			</tbody>
 		</table>
 	);
 };
 
-function Course({ course, expanded, onClick, onSave }) {
+function Course({ course, checked, expanded, onClick, onCheck, onUncheck }) {
 	var instructors = new Set();
 	course.sections.forEach(function (sec) {
 		sec.meetings.forEach(function (mtg) {
@@ -55,12 +64,10 @@ function Course({ course, expanded, onClick, onSave }) {
 		});
 	});
 	instructors.delete('Staff');
-
-	var sectionsSaved = []; //Data.sectionsSaved(crs.crs_no);
 	
 	return (
-		<tr className={ sectionsSaved.length === 0 ? '' : (sectionsSaved.length === course.sections.length ? 'course-saved' : 'courses-partially-saved') }>
-			<td className="course-check" onClick={() => onSave(course)}></td>
+		<tr className={ checked ? 'course-saved' : '' }>
+			<td className="course-check" onClick={checked ? (e => onUncheck(course)) : (e => onCheck(course))}></td>
 			<td className="course-entry">
 				<div className="course-head" onClick={() => onClick(course)}>
 					<div className="course-title">
