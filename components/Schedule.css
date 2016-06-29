@@ -1,8 +1,8 @@
 .Schedule {
 	font-size: 10pt;
 	width: 100%;
-	background-color: white;
 	
+	text-align: center;
 	-webkit-print-color-adjust: exact;
 }
 .Schedule, .Schedule-cell {

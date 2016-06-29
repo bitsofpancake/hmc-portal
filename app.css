@@ -1,6 +1,10 @@
 body {
 	margin: 0;
+	padding-bottom: 2em;
 	box-sizing: border-box;
+	background-color: #f3f3f3;
+	
+	text-align: center;
 }
 a:link, a:visited, a:hover {
 	color: #4C9B00;
@@ -10,27 +14,46 @@ a:hover {
 	text-decoration: underline;
 }
 
-.app {
-	display: flex;
+.App {
+	display: inline-flex;
+	flex-flow: column nowrap;
 	align-items: stretch;
-	justify-content: center;
-	/*height: 100vh;*/
+	margin: auto;
 	
+	text-align: left;
 	font-family: "segoe ui", "helvetica neue", helvetica, sans-serif;
 }
-.app-main {
-	flex: auto;
-	border: 1px solid red;
+.App > header {
+	line-height: 1em;
+	font-size: 1.2em;
+	text-align: left;
+	padding: 1em 2em;
+}
+.App > header > img {
+	vertical-align: middle;
+}
+.App-container {
+	box-shadow: 0 0 45px #eee;
+	
+	background-color: #fff;
+	display: flex;
+	align-items: stretch;
+}
+
+.App-container > main {
 	/*overflow: auto;*/
+	width: 60vw;
 	max-width: 900px;
 	padding: 1em;
 }
-.app-sidebar {
+.App-container > aside {
 	flex: none;
 	width: 400px;
 	max-width: 30vw;
-	border: 1px solid blue;
+	
 	position: relative;
+	background-color: #fcfcfc;
+	/*border-right: 1px solid #aaa;*/
 }
 .app-sidebar-content {
 	padding: 1em;

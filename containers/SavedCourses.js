@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import CourseList from '../components/CourseList.js';
-
+/*
 function SavedCourses({ courses, selectedCourses, onSelectCourse, onUnselectCourse }) {
 	return (
 		<CourseList
@@ -14,16 +14,17 @@ function SavedCourses({ courses, selectedCourses, onSelectCourse, onUnselectCour
 		/>
 	)
 }
-
-SavedCourses = connect(
+*/
+const SavedCourses = connect(
 	state => ({
-		courses: state.scheduler.courses,
-		selectedCourses: state.scheduler.selectedCourses
+		courses: Object.keys(state.scheduler.courses).map(id => state.scheduler.courses[id]),
+		checkedCourses: state.scheduler.selectedCourses,
+		expandedCourses: []
 	}),
 	dispatch => ({
-		onSelectCourse: course => dispatch({ type: 'SELECT_COURSE', course }),
-		onUnselectCourse: course => dispatch({ type: 'UNSELECT_COURSE', course }),
+		onCourseCheck: course => dispatch({ type: 'SELECT_COURSE', course }),
+		onCourseUncheck: course => dispatch({ type: 'UNSELECT_COURSE', course }),
 	})
-)(SavedCourses);
+)(CourseList);
 
 export default SavedCourses;
