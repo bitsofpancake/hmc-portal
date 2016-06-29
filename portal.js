@@ -103,9 +103,10 @@ const store = createStore(function (state, action) {
 			return state;
 	}
 	
-}, null, window.devToolsExtension && window.devToolsExtension());
+}, JSON.parse(sessionStorage.getItem('state')), window.devToolsExtension && window.devToolsExtension());
 
-
+// Hacky state preservation for easier debugging
+store.subscribe(() => sessionStorage.setItem('state', JSON.stringify(store.getState())));
 
 render(
 	<Provider store={store}>
