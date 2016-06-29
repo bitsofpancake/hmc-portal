@@ -15,7 +15,11 @@ function Schedule({ schedule, courses }) {
 	
 	const hours = [];
 	for (let hour = beginHour; hour <= endHour; hour++)
-		hours.push(<div className="hour" style={{ top: timeToPosition(hour) }}>{ formatTime(hour * 100, true, false) }</div>);
+		hours.push((
+			<div className="Schedule-hour" style={{ top: timeToPosition(hour) }}>
+				{ formatTime(hour * 100, true, false) }
+			</div>
+		));
 	
 	// Add each course
 	const days = 'UMTWRFS'.split('').map(() => []);
@@ -29,39 +33,41 @@ function Schedule({ schedule, courses }) {
 			// Each day.
 			meeting.days.split('').forEach(function (d, i) {
 				if (d !== '-')
-					days[i].push(<Meeting crs={course} sec={section} mtg={meeting} />);
+					days[i].push((
+						<Meeting crs={course} sec={section} mtg={meeting} />
+					));
 			});
 		});
 	});
 	
 	return (
-		<table id="schedule">
+		<table className="Schedule">
 			<tbody>
 				<tr>
-					<th></th>
-					<th>Monday</th>
-					<th>Tuesday</th>
-					<th>Wednesday</th>
-					<th>Thursday</th>
-					<th>Friday</th>
+					<th className="Schedule-cell"></th>
+					<th className="Schedule-cell">Monday</th>
+					<th className="Schedule-cell">Tuesday</th>
+					<th className="Schedule-cell">Wednesday</th>
+					<th className="Schedule-cell">Thursday</th>
+					<th className="Schedule-cell">Friday</th>
 				</tr>
 				<tr>
-					<td style={{ height: scheduleHeight + heightUnit }}>{ hours }</td>
-					{ days.slice(1, 6).map((day) => <td>{ day }</td>) }
+					<td className="Schedule-cell" style={{ height: scheduleHeight + heightUnit }}>{ hours }</td>
+					{ days.slice(1, 6).map(day => <td className="Schedule-cell">{ day }</td>) }
 				</tr>
 			</tbody>
 		</table>
 	);
 }
 
-function Meeting({ crs, sec, mtg }) {	
+function Meeting({ crs, sec, mtg }) {
 	return (
-		<div className="meeting" title={crs.title} style={{
+		<div className="Meeting" title={crs.title} style={{
 			top: timeToPosition(timeToDecimal(mtg.beg_tm)),
 			height: timeToHeight(timeToDecimal(mtg.end_tm) - timeToDecimal(mtg.beg_tm)),
 			backgroundColor: randomColor(crs.crs_no)
 		}}>
-			<div>
+			<div className="Meeting-contents">
 				<b>{ crs.crs_no }-{ sec.sec_no }</b><br />
 				{ mtg.instructors.map((instr) => instr[1]).join(', ') }<br />
 				{ formatTime(mtg.beg_tm, false) }&ndash;{ formatTime(mtg.end_tm, true) }
