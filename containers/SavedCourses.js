@@ -20,14 +20,8 @@ SavedCourses = connect(
 		selectedCourses: state.scheduler.selectedCourses
 	}),
 	dispatch => ({
-		onSelectCourse: course => dispatch({
-			type: 'SELECT_COURSE',
-			course
-		}),
-		onUnselectCourse: course => dispatch({
-			type: 'UNSELECT_COURSE',
-			course
-		}),
+		onSelectCourse: course => dispatch({ type: 'SELECT_COURSE', course }),
+		onUnselectCourse: course => dispatch({ type: 'UNSELECT_COURSE', course }),
 	})
 )(SavedCourses);
 

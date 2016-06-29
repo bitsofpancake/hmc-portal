@@ -44,35 +44,50 @@ const store = createStore(function (state, action) {
 			scheduler: {
 				courses: {}, // a dictionary of saved courses
 				selectedCourses: [], // a list of selected courses
-				scheduleIndex: 0 // index of current schedule
-			}
+				scheduleIndex: 0, // index of current schedule
+				showCourseNumber: true,
+				// selectedSections
+				savedSchedules: {},
+				loadedSchedule: null
+			},
 		};
 	}
 
 	switch (action.type) {
+		// Logistics stuff.
 		case 'CHANGE_VIEW':
 			state = update(state, 'catalog.courses', null);
 			state = update(state, 'view', action.view);
 			return state;
-			
 		case 'START_LOADING':
 			return update(state, 'loading', loading => loading + 1);
 		case 'FINISH_LOADING':
 			return update(state, 'loading', loading => loading - 1);
 		
+		// Catalog.
 		case 'LOAD_COURSES':
-			state = update(state, 'catalog.courses', action.courses);
-			return state;
+			return update(state, 'catalog.courses', action.courses);
 		
+		// Scheduler.
 		case 'SAVE_COURSE':
-			state = update(state, 'scheduler.courses.' + action.course.crs_no, action.course);
-			return state;
+			return update(state, 'scheduler.courses.' + action.course.crs_no, action.course); // TODO: bug if crs_no has a period
 		case 'UNSAVE_COURSE':
-			state = update(state, 'scheduler.courses.' + action.course.crs_no, null);
-			return state;
-	
+			return update(state, 'scheduler.courses.' + action.course.crs_no, null);
+		case 'UNSAVE_ALL_COURSES':
+			return update(state, 'scheduler.courses', {});
+		
+		case 'CHANGE_DISPLAY_OPTION':
+			
 		case 'SHOW_SCHEDULE':
 			return update(state, 'scheduler.scheduleIndex', action.scheduleIndex);
+		case 'SAVE_SCHEDULE':
+			return update(state, 'scheduler.savedSchedules.' + action.name, action.schedule);
+		case 'UNSAVE_SCHEDULE':
+			return update(state, 'scheduler.savedSchedules.' + action.name, null);
+		case 'LOAD_SCHEDULE':
+			return update(state, 'scheduler.loadedSchedule', action.schedule);
+		case 'UNLOAD_SCHEDULE':
+			return update(state, 'scheduler.loadedSchedule', null);
 		
 		case 'SELECT_COURSE':
 			state = update(state, 'scheduler.selectedCourses', selectedCourses => [...selectedCourses, action.course.crs_no]);
@@ -101,42 +116,22 @@ render(
 
 // Which page should be shown.
 var router = {
-	'catalog': function () {
-		store.dispatch({
-			type: 'CHANGE_VIEW',
-			view: 'home'
-		});
-	},
+	'schedules': () => store.dispatch({ type: 'CHANGE_VIEW', view: 'scheduler' }),
+	'catalog': () => store.dispatch({ type: 'CHANGE_VIEW', view: 'home' }),
 
 	'catalog/(\\d{4})/(FA|SU|SP)/([A-Z]{1,5})': function (yr, sess, disc) {
-		store.dispatch({
-			type: 'CHANGE_VIEW',
-			view: 'catalog'
-		});
-		store.dispatch({
-			type: 'START_LOADING'
-		});
+		store.dispatch({ type: 'CHANGE_VIEW', view: 'catalog' });
+		store.dispatch({ type: 'START_LOADING' });
 
 		api(
 			yr + '/' + sess + '?disc=' + disc,
 			courses => {
-				store.dispatch({
-					type: 'LOAD_COURSES',
-					courses
-				});
-				store.dispatch({
-					type: 'FINISH_LOADING'
-				});
+				store.dispatch({ type: 'LOAD_COURSES', courses });
+				store.dispatch({ type: 'FINISH_LOADING' });
 			}
 		);
 	},
 	
-	'schedules': function () {
-		store.dispatch({
-			type: 'CHANGE_VIEW',
-			view: 'scheduler'
-		});
-	},
 	/*
 	'schedules/([A-Za-z0-9=-]+)': function (schedule) {
 		setTimeout(function () {

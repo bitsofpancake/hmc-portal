@@ -12,24 +12,12 @@ const ActiveCourseList = connect(
 	dispatch => ({
 		onCourseClick: () => null,
 		onCourseCheck: course => {
-			dispatch({
-				type: 'SAVE_COURSE',
-				course
-			});
-			dispatch({
-				type: 'SELECT_COURSE',
-				course
-			});
+			dispatch({ type: 'SAVE_COURSE', course });
+			dispatch({ type: 'SELECT_COURSE', course });
 		},
 		onCourseUncheck: course => {
-			dispatch({
-				type: 'UNSELECT_COURSE',
-				course
-			});
-			dispatch({
-				type: 'UNSAVE_COURSE',
-				course
-			});
+			dispatch({ type: 'UNSELECT_COURSE', course });
+			dispatch({ type: 'UNSAVE_COURSE', course });
 		},
 	})
 )(CourseList);
