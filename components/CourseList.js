@@ -33,7 +33,7 @@ const catTable = {
 	'N': 'concurrent'
 };
 
-function CourseList({ courses, checkedCourses, onCourseClick, onCourseCheck, onCourseUncheck }) {
+function CourseList({ courses, checkedCourses=[], expandedCourses=[], onCourseExpand, onCourseUnexpand, onCourseCheck, onCourseUncheck }) {
 	if (!courses)
 		return null;
 		
@@ -43,9 +43,10 @@ function CourseList({ courses, checkedCourses, onCourseClick, onCourseCheck, onC
 				{ courses.map((course) => (
 					<Course
 						course={course}
-						checked={checkedCourses.includes(course.crs_no)}
-						expanded={true}
-						onClick={onCourseClick}
+						checked={checkedCourses.includes(course.id)}
+						expanded={expandedCourses.includes(course.id)}
+						onExpand={onCourseExpand}
+						onUnexpand={onCourseUnexpand}
 						onCheck={onCourseCheck} 
 						onUncheck={onCourseUncheck} 
 					/>
@@ -55,7 +56,7 @@ function CourseList({ courses, checkedCourses, onCourseClick, onCourseCheck, onC
 	);
 };
 
-function Course({ course, checked, expanded, onClick, onCheck, onUncheck }) {
+function Course({ course, checked, expanded, onExpand, onUnexpand, onCheck, onUncheck }) {
 	var instructors = new Set();
 	course.sections.forEach(function (sec) {
 		sec.meetings.forEach(function (mtg) {
@@ -76,7 +77,7 @@ function Course({ course, checked, expanded, onClick, onCheck, onUncheck }) {
 				onClick={checked ? (e => onUncheck(course)) : (e => onCheck(course))}
 			></td>
 			<td className="Course-listing">
-				<div className="Course-head" onClick={() => onClick(course)}>
+				<div className="Course-head" onClick={expanded ? (e => onUnexpand(course)) : (e => onExpand(course))}>
 					<div className="Course-title">
 						<b><CourseCode code={ course.crs_no } />: { course.title }</b>
 						{ instructors.size ? <span> (<i>{ Array.from(instructors).join('; ') }</i>)</span> : null }

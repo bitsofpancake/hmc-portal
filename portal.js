@@ -37,7 +37,7 @@ const store = createStore(function (state, action) {
 			// The catalog view.
 			catalog: {
 				courses: null, // courses to display
-				currentlyExpanded: null // currently expanded
+				expandedCourses: [] // currently expanded
 			},
 		
 			// The scheduler view.
@@ -67,12 +67,16 @@ const store = createStore(function (state, action) {
 		// Catalog.
 		case 'LOAD_COURSES':
 			return update(state, 'catalog.courses', action.courses);
+		case 'EXPAND_COURSE':
+			return update(state, 'catalog.expandedCourses', [action.course.id]);
+		case 'UNEXPAND_COURSE':
+			return update(state, 'catalog.expandedCourses', expandedCourses => expandedCourses.filter(id => id !== action.course.id));
 		
 		// Scheduler.
 		case 'SAVE_COURSE':
-			return update(state, 'scheduler.courses.' + action.course.crs_no, action.course); // TODO: bug if crs_no has a period
+			return update(state, 'scheduler.courses.' + action.course.id, action.course);
 		case 'UNSAVE_COURSE':
-			return update(state, 'scheduler.courses.' + action.course.crs_no, null);
+			return update(state, 'scheduler.courses.' + action.course.id, null);
 		case 'UNSAVE_ALL_COURSES':
 			return update(state, 'scheduler.courses', {});
 		
@@ -90,11 +94,11 @@ const store = createStore(function (state, action) {
 			return update(state, 'scheduler.loadedSchedule', null);
 		
 		case 'SELECT_COURSE':
-			state = update(state, 'scheduler.selectedCourses', selectedCourses => [...selectedCourses, action.course.crs_no]);
+			state = update(state, 'scheduler.selectedCourses', selectedCourses => [...selectedCourses, action.course.id]);
 			state = update(state, 'scheduler.scheduleIndex', 0);
 			return state;
 		case 'UNSELECT_COURSE':
-			state = update(state, 'scheduler.selectedCourses', selectedCourses => selectedCourses.filter(crs_no => crs_no !== action.course.crs_no));
+			state = update(state, 'scheduler.selectedCourses', selectedCourses => selectedCourses.filter(id => id !== action.course.id));
 			state = update(state, 'scheduler.scheduleIndex', 0);
 			return state;
 		
@@ -127,6 +131,11 @@ var router = {
 		api(
 			yr + '/' + sess + '?disc=' + disc,
 			courses => {
+				// Temporarily augment each course with an ID
+				courses.forEach(course => {
+					course.id = course.crs_no.replace(/\./g, '$') + '#';
+				});
+			
 				store.dispatch({ type: 'LOAD_COURSES', courses });
 				store.dispatch({ type: 'FINISH_LOADING' });
 			}

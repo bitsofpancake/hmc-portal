@@ -5,8 +5,9 @@ import CourseList from '../components/CourseList.js';
 function SavedCourses({ courses, selectedCourses, onSelectCourse, onUnselectCourse }) {
 	return (
 		<CourseList
-			courses={Object.keys(courses).map(crs_no => courses[crs_no])}
+			courses={Object.keys(courses).map(id => courses[id])}
 			checkedCourses={selectedCourses}
+			expandedCourses={[]}
 			onCourseClick={() => null}
 			onCourseCheck={onSelectCourse}
 			onCourseUncheck={onUnselectCourse}

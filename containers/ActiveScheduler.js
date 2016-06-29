@@ -44,11 +44,11 @@ const getSchedules = createSelector(
 		
 		// Generate possible schedules by growing possible schedules, adding courses one at a time.
 		let schedules = [[]];
-		for (let course of selectedCourses) {
+		for (let courseId of selectedCourses) {
 			const newSchedules = [];
 			for (let schedule of schedules)
-				for (let k = 0; k < courses[course].sections.length; k++) {
-					const candidateSchedule = schedule.concat([[course, k]]);
+				for (let k = 0; k < courses[courseId].sections.length; k++) {
+					const candidateSchedule = schedule.concat([[courseId, k]]);
 					if (!scheduleConflicts(candidateSchedule, courses))
 						newSchedules.push(candidateSchedule);
 				}
