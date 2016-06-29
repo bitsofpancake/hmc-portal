@@ -4,7 +4,7 @@ import { formatTime, timeToDecimal, randomColor } from '../util.js';
 // TODO: make these props.
 const beginHour = 8; // Starts at 8am
 const endHour = 21; // End at 9pm
-const scheduleHeight = 6;
+const scheduleHeight = 8;
 const heightUnit = 'in'; // the units `scheduleHeight` is expressed in.
 
 const hourHeight = scheduleHeight / (endHour - beginHour + 1);

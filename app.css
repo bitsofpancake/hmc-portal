@@ -24,13 +24,18 @@ a:hover {
 	font-family: "segoe ui", "helvetica neue", helvetica, sans-serif;
 }
 .App > header {
-	line-height: 1em;
 	font-size: 1.2em;
 	text-align: left;
-	padding: 1em 2em;
+	padding: 1em;
+	
+	display: flex;
+	align-items: center;
 }
-.App > header > img {
-	vertical-align: middle;
+.App-link {
+	margin-right: 1.5em;
+}
+.App-logo {
+	margin-right: 1.75em;
 }
 .App-container {
 	box-shadow: 0 0 45px #eee;
@@ -38,6 +43,8 @@ a:hover {
 	background-color: #fff;
 	display: flex;
 	align-items: stretch;
+	
+	font-size: 11pt;
 }
 
 .App-container > main {

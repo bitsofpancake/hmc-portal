@@ -1,10 +1,8 @@
 .CourseList {
 	width: 100%;
-	font-size: 0.9em;
 }
 
 .Course-listing {
-	/*background-color: #fff;*/
 	padding: 1em;
 }
 .Course-head {
@@ -15,7 +13,7 @@
 	line-height: 1.2em
 }
 .Course-description {
-	line-height: 1.5em;
+	line-height: 1.6em;
 }
 
 .Course-checkmark {

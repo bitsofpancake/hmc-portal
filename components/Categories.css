@@ -1,0 +1,25 @@
+.Categories {
+	list-style-type: none;
+	margin: 1.5em;
+	padding: 0;
+	
+	line-height: 1.8em;
+}
+
+.Categories-disciplines {
+	list-style-type: none;
+	padding: 0;
+	margin-bottom: 1em;
+}
+/*	
+ -ul li {		
+ -	margin: 0;		
+ -}		
+ -header ul ul li {		
+ -	white-space: nowrap;		
+ -	text-overflow: ellipsis;		
+ -	overflow: hidden;		
+ -}		
+ -header span {		
+ -	font-weight: bold;		
+ -}*/

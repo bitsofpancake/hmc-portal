@@ -115,8 +115,8 @@ const categories = {
 
 function Categories() {
 	return (
-		<ul id="categories">
-			{ Object.keys(categories).map((cat) => <Category cat={cat} disciplines={categories[cat]} />) }
+		<ul className="Categories">
+			{ Object.keys(categories).map(cat => <Category cat={cat} disciplines={categories[cat]} />) }
 		</ul>
 	);
 }
@@ -124,9 +124,9 @@ function Categories() {
 function Category({ cat, disciplines }) {
 	return (
 		<li>
-			<span>{ cat }</span>
-			<ul>
-				{ Object.keys(disciplines).map((disc) => <Discipline disc={disc} description={disciplines[disc]} />) }
+			<b>{ cat }</b>
+			<ul className="Categories-disciplines">
+				{ Object.keys(disciplines).map(disc => <Discipline disc={disc} description={disciplines[disc]} />) }
 			</ul>
 		</li>
 	);
