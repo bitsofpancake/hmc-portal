@@ -38,21 +38,19 @@ function CourseList({ courses, checkedCourses=[], expandedCourses=[], onCourseEx
 		return null;
 		
 	return (
-		<table className="CourseList">
-			<tbody>
-				{ courses.map((course) => (
-					<Course
-						course={course}
-						checked={checkedCourses.includes(course.id)}
-						expanded={expandedCourses.includes(course.id)}
-						onExpand={onCourseExpand}
-						onUnexpand={onCourseUnexpand}
-						onCheck={onCourseCheck} 
-						onUncheck={onCourseUncheck} 
-					/>
-				))}
-			</tbody>
-		</table>
+		<div className="CourseList">
+			{ courses.map(course => (
+				<Course
+					course={course}
+					checked={checkedCourses.includes(course.id)}
+					expanded={expandedCourses.includes(course.id)}
+					onExpand={onCourseExpand}
+					onUnexpand={onCourseUnexpand}
+					onCheck={onCourseCheck} 
+					onUncheck={onCourseUncheck} 
+				/>
+			))}
+		</div>
 	);
 };
 
@@ -68,25 +66,23 @@ function Course({ course, checked, expanded, onExpand, onUnexpand, onCheck, onUn
 	instructors.delete('Staff');
 	
 	return (
-		<tr>
-			<td
+		<div className="Course">
+			<div
 				className={classNames({
 					'Course-checkmark': true,
 					'Course-checked': checked
 				})}
 				onClick={checked ? (e => onUncheck(course)) : (e => onCheck(course))}
-			></td>
-			<td className="Course-listing">
-				<div className="Course-head" onClick={expanded ? (e => onUnexpand(course)) : (e => onExpand(course))}>
-					<div className="Course-title">
-						<b><CourseCode code={ course.crs_no } />: { course.title }</b>
-						{ instructors.size ? <span> (<i>{ Array.from(instructors).join('; ') }</i>)</span> : null }
-					</div>
-					{ course.abstr ? <div className="Course-description">{ course.abstr }</div> : null }
+			></div>
+			<div className="Course-head" onClick={expanded ? (e => onUnexpand(course)) : (e => onExpand(course))}>
+				<div className="Course-title">
+					<b><CourseCode code={ course.crs_no } />: { course.title }</b>
+					{ instructors.size ? <span> (<i>{ Array.from(instructors).join('; ') }</i>)</span> : null }
 				</div>
-				{ expanded ? <CourseDetails course={course} /> : null }
-			</td>
-		</tr>
+				{ course.abstr ? <div className="Course-description">{ course.abstr }</div> : null }
+			</div>
+			{ expanded ? <CourseDetails course={course} /> : null }
+		</div>
 	);
 }
 

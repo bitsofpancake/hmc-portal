@@ -2,27 +2,29 @@
 	width: 100%;
 }
 
-.Course-listing {
+.Course {
 	padding: 1em;
 }
 .Course-head {
 	cursor: pointer;
 }
 .Course-title {
-	margin-bottom: 2px;
-	line-height: 1.2em
+	margin-bottom: 0.25em;
+	line-height: 1.2em;
 }
 .Course-description {
 	line-height: 1.6em;
 }
 
 .Course-checkmark {
-	padding: 5px;
+	float: right;
 	white-space: nowrap;
 	vertical-align: top;
 	cursor: pointer;
     width: 30px;
     font-size: 32px;
+	margin: -17px 0 0.2em 1em;
+	color: #ccc;
 }
 .Course-checkmark:before {
     content: "+";

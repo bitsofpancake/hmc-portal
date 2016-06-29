@@ -60,10 +60,25 @@ a:hover {
 	
 	position: relative;
 	background-color: #fcfcfc;
-	/*border-right: 1px solid #aaa;*/
 }
-.app-sidebar-content {
-	padding: 1em;
+.App-welcome {
+	text-align: center;
+	font-family: "times new roman";
+	font-size: 30pt;
+	font-style: italic;
+	line-height: 1.5em;
+	margin: 5em
+}
+
+/* Temporary hack, I swear! */
+aside .CourseList {
+	margin: 0.5em 0 0.5em 0.5em;
+}
+aside .Course {
+	margin-right: 0.4em;
+}
+aside .Course-title > span, aside .Course-description {
+	display: none;
 }
 
 .crs-HM { color: gold; }

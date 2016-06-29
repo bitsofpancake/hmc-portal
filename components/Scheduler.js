@@ -12,19 +12,9 @@ function Scheduler({ courses, schedules, scheduleIndex=0, onNext, onPrevious }) 
 	return (
 		<div>
 			<div className="Scheduler-controls">
-				<div>
-					<span>Schedule <b id="page-number">{ scheduleIndex + 1 }</b> of <b id="page-count">{ schedules.length }</b></span>
-				</div>
-				
-				<ul>
-					<li><a href="#" onClick={createCallback(onNext)}>next</a></li>
-					<li><a href="#" onClick={createCallback(onPrevious)}>previous</a></li>
-				</ul>
-				
-				<ul>
-					<li><a href="#">save</a></li>
-					<li><a href="#">print</a></li>
-				</ul>
+				<a className="Scheduler-nav" href="#" onClick={createCallback(onPrevious)}>previous</a>
+				<span className="Scheduler-title"><b>{ scheduleIndex + 1 }</b> of <b>{ schedules.length }</b></span>
+				<a className="Scheduler-nav" href="#" onClick={createCallback(onNext)}>next</a>
 			</div>
 			<div className="Scheduler-schedule">
 				<Schedule courses={courses} schedule={schedules[scheduleIndex]} />
