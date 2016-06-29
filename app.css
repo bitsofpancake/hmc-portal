@@ -1,0 +1,36 @@
+body {
+	margin: 0;
+	box-sizing: border-box;
+}
+
+.app {
+	display: flex;
+	align-items: stretch;
+	justify-content: center;
+	/*height: 100vh;*/
+	
+	font-family: "segoe ui", "helvetica neue", helvetica, sans-serif;
+}
+.app-main {
+	flex: auto;
+	border: 1px solid red;
+	/*overflow: auto;*/
+	max-width: 900px;
+	padding: 1em;
+}
+.app-sidebar {
+	flex: none;
+	width: 400px;
+	max-width: 30vw;
+	border: 1px solid blue;
+	position: relative;
+}
+.app-sidebar-content {
+	padding: 1em;
+}
+
+.crs-HM { color: gold; }
+.crs-PO { color: blue; }
+.crs-CM { color: red; }
+.crs-SC { color: green; }
+.crs-PZ { color: orange; }

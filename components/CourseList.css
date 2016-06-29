@@ -1,0 +1,110 @@
+.CourseList {
+	width: 100%;
+	font-size: 0.9em;
+}
+
+.Course-listing {
+	background-color: #fff;
+	padding: 1em;
+}
+.Course-head {
+	cursor: pointer;
+}
+.Course-title {
+	margin-bottom: 2px;
+	line-height: 1.2em
+}
+.Course-description {
+	line-height: 1.5em;
+}
+
+.Course-checkmark {
+	padding: 5px;
+	white-space: nowrap;
+	vertical-align: top;
+	cursor: pointer;
+    width: 30px;
+    font-size: 32px;
+}
+.Course-checkmark:before {
+    content: "+";
+}
+.Course-checkmark:hover {
+    color: #4C9B00;
+}
+
+.Course-checkmark.Course-checked:before {
+    content: "\2713";
+    color: #4C9B00;
+	font-size: 26px;
+}
+
+.CourseDetails {
+	margin-top: 1em;
+	font-size: 0.8em;
+}
+
+.CourseRequirements {
+	margin: 1em;
+}
+.CourseRequirements-delimiter {
+	font-variant: small-caps
+}
+
+.CourseDetails-footnotes {
+	margin: 0.5em 1em 0;
+}
+
+.CourseDetails-sections {
+	width: 100%;
+}
+.CourseSection > td {
+	padding: 3px;
+}
+.CourseSection:nth-child(odd) {
+	background-color: #F3F8EF !important;
+}
+.CourseSection:nth-child(even) {
+	background-color: #E9F2E0 !important;
+}
+
+.CourseSection-head {
+	text-align: left;
+	width: 17%;
+	padding: 5px 1em !important;
+}
+.CourseSection-meetings {
+	text-align: center;
+}
+.CourseSection-dates, .CourseSection-numbers {
+	text-align: center;
+	width: 10%;
+}
+.CourseSection-units {
+	text-align: center;
+	width: 5%;
+}
+.CourseSection-number-label {
+	color: #8a8;
+}
+
+.CourseSection-meetings > table {
+	margin: 0 auto;
+}
+
+.CourseSection-meeting {
+	padding: 0 1px;
+	white-space: nowrap;
+}
+.CourseSection-meeting-type {
+	text-align: right;
+	padding-right: 3px;
+	color: #666;
+}
+.CourseSection-meeting-days {
+	text-align: center;
+}
+
+.CourseSection-meeting-time {
+	text-align: left;
+}
