@@ -162,7 +162,6 @@ window.onhashchange = function () {
 	}
 	
 	// No match.
-	document.body.className = '';
 	window.location.hash = '#catalog';
 };
 
