@@ -11,25 +11,24 @@ function Scheduler({ courses, schedules, scheduleIndex=0, onNext, onPrevious }) 
 	};
 	return (
 		<div>
-			<div id="controls" className="generated">
-				<div id="title">
-					<span className="show-generated">Schedule <b id="page-number">{ scheduleIndex + 1 }</b> of <b id="page-count">{ schedules.length }</b></span>
-					<span className="show-saved">Schedule <b id="page-number">1</b> of <b id="page-count">1</b></span>
+			<div className="Scheduler-controls">
+				<div>
+					<span>Schedule <b id="page-number">{ scheduleIndex + 1 }</b> of <b id="page-count">{ schedules.length }</b></span>
 				</div>
 				
-				<ul id="actions">
-					<li className="show-generated"><a id="schedule-save" href="#">save</a></li>
-					<li className="show-saved"><a id="schedule-unsave" href="#">unsave</a></li>
-					<li className="show-saved"><a id="schedule-rename" href="#">rename</a></li>
-					<li><a id="schedule-print" href="#">print</a></li>
+				<ul>
+					<li><a href="#" onClick={createCallback(onNext)}>next</a></li>
+					<li><a href="#" onClick={createCallback(onPrevious)}>previous</a></li>
 				</ul>
 				
-				<ul id="pages">
-					<li><a id="page-right" href="#" onClick={createCallback(onNext)}>next</a></li>
-					<li><a id="page-left" href="#" onClick={createCallback(onPrevious)}>previous</a></li>
+				<ul>
+					<li><a href="#">save</a></li>
+					<li><a href="#">print</a></li>
 				</ul>
 			</div>
-			<Schedule courses={courses} schedule={schedules[scheduleIndex]} />
+			<div className="Scheduler-schedule">
+				<Schedule courses={courses} schedule={schedules[scheduleIndex]} />
+			</div>
 		</div>
 	);
 }
